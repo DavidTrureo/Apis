@@ -1,13 +1,13 @@
 package com.example.edutech.evaluacion.service;
 
 import java.util.List;
-import java.util.stream.Collectors; // IMPORTAR
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.edutech.evaluacion.dto.PreguntaCreateDTO;
-import com.example.edutech.evaluacion.dto.PreguntaResponseDTO; // IMPORTAR
+import com.example.edutech.evaluacion.dto.PreguntaResponseDTO;
 import com.example.edutech.evaluacion.model.Evaluacion;
 import com.example.edutech.evaluacion.model.Pregunta;
 import com.example.edutech.evaluacion.repository.EvaluacionRepository;
@@ -34,8 +34,8 @@ public class PreguntaService {
     }
 
     @Transactional
-    public PreguntaResponseDTO crearPreguntaDTO(PreguntaCreateDTO dto) { // CAMBIO
-        // ... (validaciones existentes)
+    public PreguntaResponseDTO crearPreguntaDTO(PreguntaCreateDTO dto) {
+
         Evaluacion evaluacion = evaluacionRepository.findById(dto.getEvaluacionId())
                 .orElseThrow(() -> new IllegalArgumentException("Evaluación con ID " + dto.getEvaluacionId() + " no encontrada."));
 
@@ -47,7 +47,7 @@ public class PreguntaService {
     }
 
     @Transactional(readOnly = true)
-    public List<PreguntaResponseDTO> listarPreguntasDTOPorEvaluacionId(Integer evaluacionId) { // CAMBIO
+    public List<PreguntaResponseDTO> listarPreguntasDTOPorEvaluacionId(Integer evaluacionId) {
         if (!evaluacionRepository.existsById(evaluacionId)) {
             throw new IllegalArgumentException("Evaluación con ID " + evaluacionId + " no encontrada.");
         }
@@ -57,20 +57,19 @@ public class PreguntaService {
     }
 
     @Transactional(readOnly = true)
-    public List<PreguntaResponseDTO> listarTodasLasPreguntasDTO(){ // CAMBIO
+    public List<PreguntaResponseDTO> listarTodasLasPreguntasDTO(){
         return preguntaRepository.findAll().stream()
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public PreguntaResponseDTO obtenerPreguntaDTOPorId(Integer id) { // CAMBIO
+    public PreguntaResponseDTO obtenerPreguntaDTOPorId(Integer id) {
         Pregunta pregunta = preguntaRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Pregunta con ID " + id + " no encontrada."));
         return mapToResponseDTO(pregunta);
     }
-    
-    // Mantener el método que devuelve la entidad si es necesario internamente
+
     public Pregunta obtenerEntidadPreguntaPorId(Integer id) {
         return preguntaRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Pregunta con ID " + id + " no encontrada."));
