@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,19 +25,19 @@ import com.example.edutech.usuario.service.UsuarioService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/usuarios") // Ruta base estandarizada
+@RequestMapping("/api/usuarios")
 public class UsuarioController {
 
     private static final Logger logger = LoggerFactory.getLogger(UsuarioController.class);
     private final UsuarioService usuarioService;
 
-    //@Autowired
     public UsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
     }
 
     @PostMapping("/registrar")
     public ResponseEntity<?> registrar(@Valid @RequestBody UsuarioCreateDTO usuarioCreateDTO) {
+        // ... (sin cambios, el registro es público)
         try {
             String mensaje = usuarioService.registrarUsuario(usuarioCreateDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(mensaje);
@@ -52,17 +53,16 @@ public class UsuarioController {
         }
     }
 
-    // --- Endpoints para la gestión del perfil del propio usuario ---
     @GetMapping("/me")
-    // @PreAuthorize("isAuthenticated()") // Proteger este endpoint
     public ResponseEntity<?> obtenerMiPerfil() {
+        // ... (sin cambios, se basa en la autenticación que se configurará después)
         try {
             UsuarioDTO perfil = usuarioService.obtenerMiPerfil();
             return ResponseEntity.ok(perfil);
-        } catch (IllegalStateException e) { // Usuario no autenticado
+        } catch (IllegalStateException e) { 
             logger.warn("Intento de obtener perfil sin autenticación: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        } catch (IllegalArgumentException e) { // Usuario autenticado pero no encontrado en BD
+        } catch (IllegalArgumentException e) { 
             logger.error("Error al obtener perfil del usuario autenticado: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
@@ -72,15 +72,15 @@ public class UsuarioController {
     }
 
     @PutMapping("/me")
-    // @PreAuthorize("isAuthenticated()") // Proteger este endpoint
     public ResponseEntity<?> actualizarMiPerfil(@Valid @RequestBody PerfilUpdateDTO perfilUpdateDTO) {
+        // ... (sin cambios, se basa en la autenticación)
         try {
             UsuarioDTO perfilActualizado = usuarioService.actualizarMiPerfil(perfilUpdateDTO);
             return ResponseEntity.ok(perfilActualizado);
-        } catch (IllegalStateException e) { // Usuario no autenticado
+        } catch (IllegalStateException e) { 
             logger.warn("Intento de actualizar perfil sin autenticación: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        } catch (IllegalArgumentException e) { // RUT no encontrado o email duplicado
+        } catch (IllegalArgumentException e) { 
             logger.warn("Error al actualizar perfil: {}", e.getMessage());
             if (e.getMessage().toLowerCase().contains("no encontrado")) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -92,73 +92,91 @@ public class UsuarioController {
         }
     }
 
-    // --- Endpoints para administración de usuarios (roles: ADMIN, GERENTE_CURSOS, etc.) ---
     @GetMapping("/{rut}")
-    // @PreAuthorize("hasAnyAuthority('ROL_ADMIN', 'ROL_GERENTE_CURSOS')")
-    public ResponseEntity<?> obtenerUsuarioPorRut(@PathVariable String rut) { // Renombrado de obtenerUsuario
+    public ResponseEntity<?> obtenerUsuarioPorRut(@PathVariable String rut) {
+        // Para simplificar, este endpoint podría ser público o requerir admin
+        // Si requiere admin, añadir @RequestHeader("X-Admin-RUT")
+        logger.info("GET /api/usuarios/{} solicitado", rut);
         try {
             UsuarioDTO usuarioDTO = usuarioService.obtenerUsuarioDTOPorRut(rut);
             return ResponseEntity.ok(usuarioDTO);
         } catch (IllegalArgumentException e){
-            logger.info("Usuario con RUT {} no encontrado (admin).", rut);
+            logger.warn("Usuario con RUT {} no encontrado.", rut);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
     @GetMapping
-    // @PreAuthorize("hasAnyAuthority('ROL_ADMIN', 'ROL_GERENTE_CURSOS')")
-    public ResponseEntity<List<UsuarioDTO>> listarTodosLosUsuarios() { // Renombrado de listar
+    public ResponseEntity<List<UsuarioDTO>> listarTodosLosUsuarios() {
+        // Para simplificar, este endpoint podría ser público o requerir admin
+        logger.info("GET /api/usuarios solicitado");
         return ResponseEntity.ok(usuarioService.listarUsuarios());
     }
 
     @PutMapping("/{rut}")
-    // @PreAuthorize("hasAuthority('ROL_ADMIN')")
-    public ResponseEntity<?> actualizarUsuarioPorAdmin(@PathVariable String rut, @Valid @RequestBody UsuarioUpdateDTO usuarioUpdateDTO) { // Renombrado de actualizar
+    public ResponseEntity<?> actualizarUsuarioPorAdmin(@PathVariable String rut,
+                                                    @Valid @RequestBody UsuarioUpdateDTO usuarioUpdateDTO,
+                                                    @RequestHeader("X-Admin-RUT") String adminRutSolicitante) {
+        logger.info("PUT /api/usuarios/{} solicitado por admin {}", rut, adminRutSolicitante);
         try {
-            String mensaje = usuarioService.actualizarUsuario(rut, usuarioUpdateDTO);
+            String mensaje = usuarioService.actualizarUsuario(rut, usuarioUpdateDTO, adminRutSolicitante);
             return ResponseEntity.ok(mensaje);
-        } catch (IllegalArgumentException e) {
-            logger.warn("Error al actualizar usuario {} por admin: {}", rut, e.getMessage());
+        } catch (SecurityException e) {
+            logger.warn("Intento no autorizado de actualizar usuario {}: {}", rut, e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        }
+        catch (IllegalArgumentException e) {
+            logger.warn("Error al actualizar usuario {}: {}", rut, e.getMessage());
             if (e.getMessage().toLowerCase().contains("no encontrado")) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
             }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            logger.error("Error interno al actualizar usuario {} por admin:", rut, e);
+            logger.error("Error interno al actualizar usuario {}:", rut, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno al actualizar el usuario.");
         }
     }
 
     @DeleteMapping("/{rut}")
-    // @PreAuthorize("hasAuthority('ROL_ADMIN')")
-    public ResponseEntity<String> eliminarUsuarioPorAdmin(@PathVariable String rut) { // Renombrado de eliminar
+    public ResponseEntity<String> eliminarUsuarioPorAdmin(@PathVariable String rut,
+                                                        @RequestHeader("X-Admin-RUT") String adminRutSolicitante) {
+        logger.info("DELETE /api/usuarios/{} solicitado por admin {}", rut, adminRutSolicitante);
         try {
-            String mensaje = usuarioService.eliminarUsuario(rut);
-            logger.info("Usuario {} eliminado por admin.", rut);
+            String mensaje = usuarioService.eliminarUsuario(rut, adminRutSolicitante);
             return ResponseEntity.ok(mensaje);
-        } catch (IllegalArgumentException e) {
+        } catch (SecurityException e) {
+            logger.warn("Intento no autorizado de eliminar usuario {}: {}", rut, e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        }
+        catch (IllegalArgumentException e) {
             logger.warn("Intento de admin de eliminar usuario no existente {}: {}", rut, e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
-            logger.error("Error interno al eliminar usuario {} por admin:", rut, e);
+            logger.error("Error interno al eliminar usuario {}:", rut, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno al eliminar el usuario.");
         }
     }
 
     @PutMapping("/{rut}/rol/{nombreRol}")
-    // @PreAuthorize("hasAuthority('ROL_ADMIN')")
-    public ResponseEntity<String> asignarRolAUsuarioPorAdmin(@PathVariable String rut, @PathVariable String nombreRol) { // Renombrado de asignarRol
+    public ResponseEntity<String> asignarRolAUsuarioPorAdmin(@PathVariable String rut,
+                                                            @PathVariable String nombreRol,
+                                                            @RequestHeader("X-Admin-RUT") String adminRutSolicitante) {
+        logger.info("PUT /api/usuarios/{}/rol/{} solicitado por admin {}", rut, nombreRol, adminRutSolicitante);
         try {
-            String mensaje = usuarioService.asignarRolAUsuario(rut, nombreRol);
+            String mensaje = usuarioService.asignarRolAUsuario(rut, nombreRol, adminRutSolicitante);
             return ResponseEntity.ok(mensaje);
-        } catch (IllegalArgumentException e) {
-            logger.warn("Error al asignar rol {} a usuario {} por admin: {}", nombreRol, rut, e.getMessage());
+        } catch (SecurityException e) {
+            logger.warn("Intento no autorizado de asignar rol a usuario {}: {}", rut, e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        }
+        catch (IllegalArgumentException e) {
+            logger.warn("Error al asignar rol {} a usuario {}: {}", nombreRol, rut, e.getMessage());
             if (e.getMessage().toLowerCase().contains("no encontrado")) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
             }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            logger.error("Error interno al asignar rol a usuario {} por admin:", rut, e);
+            logger.error("Error interno al asignar rol a usuario {}:", rut, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno al asignar el rol.");
         }
     }

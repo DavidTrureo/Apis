@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +21,7 @@ import com.example.edutech.usuario.dto.RolDTO;
 import com.example.edutech.usuario.dto.RolUpdateDTO;
 import com.example.edutech.usuario.service.RolService;
 
-import jakarta.validation.Valid; // IMPORTAR
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/roles")
@@ -34,34 +35,38 @@ public class RolController {
     }
 
     @PostMapping
-    // @PreAuthorize("hasAuthority('ROL_ADMIN')")
-    public ResponseEntity<?> crearRol(@Valid @RequestBody RolCreateDTO createDTO) { // CAMBIO: Usa RolCreateDTO y @Valid
+    public ResponseEntity<?> crearRol(@Valid @RequestBody RolCreateDTO createDTO,
+                                    @RequestHeader(name = "X-Admin-RUT", required = true) String adminRutSolicitante) {
         try {
-            RolDTO rolCreadoDTO = rolService.crearRol(createDTO);
+            RolDTO rolCreadoDTO = rolService.crearRol(createDTO, adminRutSolicitante);
             return ResponseEntity.status(HttpStatus.CREATED).body(rolCreadoDTO);
-        } catch (IllegalArgumentException e) {
-            logger.warn("Error al crear rol: {}", e.getMessage());
+        } catch (SecurityException e) {
+            logger.warn("Intento no autorizado de crear rol (RUT solicitante: {}): {}", adminRutSolicitante, e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        }
+        catch (IllegalArgumentException e) {
+            logger.warn("Error al crear rol (solicitado por {}): {}", adminRutSolicitante, e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
-            logger.warn("Conflicto de datos al crear rol (probablemente nombre duplicado): {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Ya existe un rol con ese nombre.");
+            logger.warn("Conflicto de datos al crear rol (solicitado por {}): {}", adminRutSolicitante, e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Ya existe un rol con el nombre especificado.");
         }
         catch (Exception e) {
-            logger.error("Error interno al crear rol:", e);
+            logger.error("Error interno al crear rol (solicitado por {}):", adminRutSolicitante, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno al crear el rol.");
         }
     }
 
     @GetMapping
-    // @PreAuthorize("hasAuthority('ROL_ADMIN')")
     public ResponseEntity<List<RolDTO>> listarRoles() {
+        logger.info("GET /api/roles solicitado");
         List<RolDTO> rolesDTO = rolService.listarRoles();
         return ResponseEntity.ok(rolesDTO);
     }
 
     @GetMapping("/{nombre}")
-    // @PreAuthorize("hasAuthority('ROL_ADMIN')")
     public ResponseEntity<?> obtenerRolPorNombre(@PathVariable String nombre) {
+        logger.info("GET /api/roles/{} solicitado", nombre);
         try {
             RolDTO rolDTO = rolService.obtenerRolDTOPorNombre(nombre);
             return ResponseEntity.ok(rolDTO);
@@ -72,37 +77,48 @@ public class RolController {
     }
 
     @PutMapping("/{nombre}")
-    // @PreAuthorize("hasAuthority('ROL_ADMIN')")
-    public ResponseEntity<?> actualizarRol(@PathVariable String nombre, @Valid @RequestBody RolUpdateDTO updateDTO) { // CAMBIO: Usa RolUpdateDTO y @Valid
+    public ResponseEntity<?> actualizarRol(@PathVariable String nombre,
+                                        @Valid @RequestBody RolUpdateDTO updateDTO,
+                                        @RequestHeader(name = "X-Admin-RUT", required = true) String adminRutSolicitante) {
+        logger.info("PUT /api/roles/{} solicitado por admin {}", nombre, adminRutSolicitante);
         try {
-            RolDTO rolActualizadoDTO = rolService.actualizarRol(nombre, updateDTO);
+            RolDTO rolActualizadoDTO = rolService.actualizarRol(nombre, updateDTO, adminRutSolicitante);
             return ResponseEntity.ok(rolActualizadoDTO);
-        } catch (IllegalArgumentException e) {
-            logger.warn("Error al actualizar rol '{}': {}", nombre, e.getMessage());
+        } catch (SecurityException e) {
+            logger.warn("Intento no autorizado de actualizar rol '{}' (RUT solicitante: {}): {}", nombre, adminRutSolicitante, e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        }
+        catch (IllegalArgumentException e) {
+            logger.warn("Error al actualizar rol '{}' (solicitado por {}): {}", nombre, adminRutSolicitante, e.getMessage());
             if (e.getMessage().toLowerCase().contains("no encontrado")) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
             }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            logger.error("Error interno al actualizar rol '{}':", nombre, e);
+            logger.error("Error interno al actualizar rol '{}' (solicitado por {}):", nombre, adminRutSolicitante, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno al actualizar el rol.");
         }
     }
 
     @DeleteMapping("/{nombre}")
-    // @PreAuthorize("hasAuthority('ROL_ADMIN')")
-    public ResponseEntity<String> eliminarRol(@PathVariable String nombre) {
+    public ResponseEntity<String> eliminarRol(@PathVariable String nombre,
+                                            @RequestHeader(name = "X-Admin-RUT", required = true) String adminRutSolicitante) {
+        logger.info("DELETE /api/roles/{} solicitado por admin {}", nombre, adminRutSolicitante);
         try {
-            String mensaje = rolService.eliminarRol(nombre);
+            String mensaje = rolService.eliminarRol(nombre, adminRutSolicitante);
             return ResponseEntity.ok(mensaje);
-        } catch (IllegalStateException e) { // Para rol en uso
-            logger.warn("Conflicto al eliminar rol '{}': {}", nombre, e.getMessage());
+        } catch (SecurityException e) {
+            logger.warn("Intento no autorizado de eliminar rol '{}' (RUT solicitante: {}): {}", nombre, adminRutSolicitante, e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        }
+        catch (IllegalStateException e) { // Para rol en uso
+            logger.warn("Conflicto al eliminar rol '{}' (solicitado por {}): {}", nombre, adminRutSolicitante, e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         } catch (IllegalArgumentException e) { // Para rol no encontrado
-            logger.warn("Intento de eliminar rol no existente '{}': {}", nombre, e.getMessage());
+            logger.warn("Intento de eliminar rol no existente '{}' (solicitado por {}): {}", nombre, adminRutSolicitante, e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
-            logger.error("Error interno al eliminar rol '{}':", nombre, e);
+            logger.error("Error interno al eliminar rol '{}' (solicitado por {}):", nombre, adminRutSolicitante, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno al eliminar el rol.");
         }
     }

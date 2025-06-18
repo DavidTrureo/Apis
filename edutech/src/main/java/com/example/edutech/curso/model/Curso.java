@@ -1,5 +1,5 @@
 package com.example.edutech.curso.model;
-//REALIZADO POR: Maverick Valdes
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,8 +10,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;         // IMPORTAR
-import jakarta.persistence.Enumerated;     // IMPORTAR
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -32,9 +32,12 @@ public class Curso {
     @Column(length = 1000)
     private String descripcionDetallada;
 
-    @Enumerated(EnumType.STRING) // IMPORTANTE: Guardar como String en la BD
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
-    private EstadoCursoEnum estadoCurso; // CAMBIO DE String A EstadoCursoEnum
+    private EstadoCursoEnum estadoCurso;
+
+    @Column(length = 100)
+    private String categoria; // Campo para la categoría del curso
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal precioBase;
@@ -48,36 +51,43 @@ public class Curso {
     @JsonIgnoreProperties({"curso", "hibernateLazyInitializer"})
     private List<ContenidoCurso> contenidos = new ArrayList<>();
 
-
     public Curso() {
         this.precioBase = BigDecimal.ZERO;
-        this.estadoCurso = EstadoCursoEnum.BORRADOR; // Estado inicial por defecto
+        this.estadoCurso = EstadoCursoEnum.BORRADOR;
     }
 
-
-    public Curso(String sigla, String nombre, String descripcionDetallada, EstadoCursoEnum estadoCurso, BigDecimal precioBase) { // CAMBIO EN CONSTRUCTOR
+    // Constructor actualizado para incluir categoria
+    public Curso(String sigla, String nombre, String descripcionDetallada, EstadoCursoEnum estadoCurso, String categoria, BigDecimal precioBase) {
         this.sigla = sigla;
         this.nombre = nombre;
         this.descripcionDetallada = descripcionDetallada;
         this.estadoCurso = (estadoCurso != null) ? estadoCurso : EstadoCursoEnum.BORRADOR;
+        this.categoria = categoria;
         this.precioBase = (precioBase != null) ? precioBase : BigDecimal.ZERO;
     }
 
-
+    // --- Getters y Setters ---
     public String getSigla() { return sigla; }
     public void setSigla(String sigla) { this.sigla = sigla; }
+
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
+
     public String getDescripcionDetallada() { return descripcionDetallada; }
     public void setDescripcionDetallada(String descripcionDetallada) { this.descripcionDetallada = descripcionDetallada; }
 
-    public EstadoCursoEnum getEstadoCurso() { return estadoCurso; } // CAMBIO DE TIPO DE RETORNO
-    public void setEstadoCurso(EstadoCursoEnum estadoCurso) { this.estadoCurso = estadoCurso; } // CAMBIO DE TIPO DE PARÁMETRO
+    public EstadoCursoEnum getEstadoCurso() { return estadoCurso; }
+    public void setEstadoCurso(EstadoCursoEnum estadoCurso) { this.estadoCurso = estadoCurso; }
+
+    public String getCategoria() { return categoria; }
+    public void setCategoria(String categoria) { this.categoria = categoria; }
 
     public BigDecimal getPrecioBase() { return precioBase; }
     public void setPrecioBase(BigDecimal precioBase) { this.precioBase = precioBase; }
+
     public Usuario getInstructor() { return instructor; }
     public void setInstructor(Usuario instructor) { this.instructor = instructor; }
+
     public List<ContenidoCurso> getContenidos() { return contenidos; }
     public void setContenidos(List<ContenidoCurso> contenidos) { this.contenidos = contenidos; }
 
@@ -90,8 +100,9 @@ public class Curso {
         return "Curso{" +
                 "sigla='" + sigla + '\'' +
                 ", nombre='" + nombre + '\'' +
+                ", categoria='" + categoria + '\'' +
+                ", estadoCurso=" + (estadoCurso != null ? estadoCurso.getDescripcion() : "N/A") +
                 ", precioBase=" + precioBase +
-                ", estadoCurso='" + (estadoCurso != null ? estadoCurso.getDescripcion() : "N/A") + '\'' +
                 ", instructor=" + (instructor != null ? instructor.getNombre() : "No asignado") +
                 '}';
     }

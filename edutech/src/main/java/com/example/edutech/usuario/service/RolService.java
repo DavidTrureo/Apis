@@ -1,5 +1,6 @@
 package com.example.edutech.usuario.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -9,9 +10,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.edutech.usuario.dto.RolCreateDTO; // IMPORTAR
+import com.example.edutech.config.AdminRutChecker;
+import com.example.edutech.usuario.dto.RolCreateDTO;
 import com.example.edutech.usuario.dto.RolDTO;
-import com.example.edutech.usuario.dto.RolUpdateDTO; // IMPORTAR
+import com.example.edutech.usuario.dto.RolUpdateDTO;
 import com.example.edutech.usuario.model.Permiso;
 import com.example.edutech.usuario.model.Rol;
 import com.example.edutech.usuario.repository.RolRepository;
@@ -24,15 +26,23 @@ public class RolService {
 
     private final RolRepository rolRepository;
     private final UsuarioRepository usuarioRepository;
+    private final AdminRutChecker adminRutChecker;
 
-    public RolService(RolRepository rolRepository, UsuarioRepository usuarioRepository) {
+    public RolService(RolRepository rolRepository,
+                    UsuarioRepository usuarioRepository,
+                    AdminRutChecker adminRutChecker) {
         this.rolRepository = rolRepository;
         this.usuarioRepository = usuarioRepository;
+        this.adminRutChecker = adminRutChecker;
     }
 
     @Transactional
-    public RolDTO crearRol(RolCreateDTO dto) { // CAMBIO: Recibe RolCreateDTO
-        // Las validaciones de @NotBlank y @Size del DTO son manejadas por @Valid en el controlador
+    public RolDTO crearRol(RolCreateDTO dto, String adminRutSolicitante) {
+        if (!adminRutChecker.isAdmin(adminRutSolicitante)) {
+            logger.warn("Intento no autorizado de crear rol por RUT (no admin): {}", adminRutSolicitante);
+            throw new SecurityException("Acción no autorizada: Se requieren privilegios de administrador para crear un rol.");
+        }
+
         String nombreNormalizado = dto.getNombre().toUpperCase().replace(" ", "_");
         if (rolRepository.existsById(nombreNormalizado)) {
             logger.warn("Intento de crear rol duplicado: {}", nombreNormalizado);
@@ -44,12 +54,13 @@ public class RolService {
         nuevoRol.setDescripcion(dto.getDescripcion());
 
         Rol rolGuardado = rolRepository.save(nuevoRol);
-        logger.info("Rol '{}' creado exitosamente.", nombreNormalizado);
-        return mapToRolDTOWithPermissions(rolGuardado); // Devuelve el DTO con permisos (inicialmente vacío)
+        logger.info("Rol '{}' creado exitosamente por admin {}.", nombreNormalizado, adminRutSolicitante);
+        return mapToRolDTOWithPermissions(rolGuardado);
     }
 
     @Transactional(readOnly = true)
     public List<RolDTO> listarRoles() {
+        logger.debug("Listando todos los roles.");
         return rolRepository.findAll().stream()
                 .map(this::mapToRolDTOWithPermissions)
                 .collect(Collectors.toList());
@@ -58,6 +69,7 @@ public class RolService {
     @Transactional(readOnly = true)
     public RolDTO obtenerRolDTOPorNombre(String nombre) {
         String nombreNormalizado = nombre.toUpperCase().replace(" ", "_");
+        logger.debug("Buscando rol por nombre: {} (normalizado: {})", nombre, nombreNormalizado);
         Rol rol = rolRepository.findById(nombreNormalizado)
                 .orElseThrow(() -> {
                     logger.warn("Rol con nombre '{}' (normalizado: '{}') no encontrado.", nombre, nombreNormalizado);
@@ -73,9 +85,12 @@ public class RolService {
                 .orElseThrow(() -> new IllegalArgumentException("Rol '" + nombre + "' (normalizado: '"+nombreNormalizado+"') no encontrado."));
     }
 
-
     @Transactional
-    public RolDTO actualizarRol(String nombreRol, RolUpdateDTO dto) { // CAMBIO: Recibe RolUpdateDTO
+    public RolDTO actualizarRol(String nombreRol, RolUpdateDTO dto, String adminRutSolicitante) {
+        if (!adminRutChecker.isAdmin(adminRutSolicitante)) {
+            logger.warn("Intento no autorizado de actualizar rol {} por RUT (no admin): {}", nombreRol, adminRutSolicitante);
+            throw new SecurityException("Acción no autorizada: Se requieren privilegios de administrador para actualizar un rol.");
+        }
         String nombreNormalizado = nombreRol.toUpperCase().replace(" ", "_");
         Rol rolExistente = rolRepository.findById(nombreNormalizado)
                 .orElseThrow(() -> {
@@ -83,21 +98,23 @@ public class RolService {
                     return new IllegalArgumentException("Error: Rol '" + nombreRol + "' no encontrado para actualizar.");
                 });
 
-        // La descripción es el único campo actualizable a través de este DTO.
-        // La validación @NotBlank del DTO asegura que la descripción no sea vacía.
         if (dto.getDescripcion() != null && !dto.getDescripcion().equals(rolExistente.getDescripcion())) {
             rolExistente.setDescripcion(dto.getDescripcion());
             Rol guardado = rolRepository.save(rolExistente);
-            logger.info("Descripción del rol '{}' actualizada.", nombreNormalizado);
+            logger.info("Descripción del rol '{}' actualizada por admin {}.", nombreNormalizado, adminRutSolicitante);
             return mapToRolDTOWithPermissions(guardado);
         } else {
-            logger.info("No se realizaron cambios en la descripción del rol '{}' (descripción igual o nula en DTO pero DTO es @NotBlank).", nombreNormalizado);
+            logger.info("No se realizaron cambios en la descripción del rol '{}'. La descripción proporcionada era igual a la existente o nula (DTO está validado con @NotBlank).", nombreNormalizado);
             return mapToRolDTOWithPermissions(rolExistente);
         }
     }
 
     @Transactional
-    public String eliminarRol(String nombreRol) {
+    public String eliminarRol(String nombreRol, String adminRutSolicitante) {
+        if (!adminRutChecker.isAdmin(adminRutSolicitante)) {
+            logger.warn("Intento no autorizado de eliminar rol {} por RUT (no admin): {}", nombreRol, adminRutSolicitante);
+            throw new SecurityException("Acción no autorizada: Se requieren privilegios de administrador para eliminar un rol.");
+        }
         String nombreNormalizado = nombreRol.toUpperCase().replace(" ", "_");
         Rol rol = rolRepository.findById(nombreNormalizado)
                 .orElseThrow(() -> {
@@ -110,20 +127,20 @@ public class RolService {
             logger.warn("Intento de eliminar rol '{}' que está en uso por {} usuario(s).", nombreNormalizado, countUsuariosConRol);
             throw new IllegalStateException("Error: No se puede eliminar el rol '" + nombreRol + "' porque está asignado a " + countUsuariosConRol + " usuario(s).");
         }
-
-        // Al eliminar un Rol, la tabla de unión rol_permiso manejará la eliminación de las relaciones
-        // gracias a la configuración de la relación @ManyToMany.
         rolRepository.delete(rol);
-        logger.info("Rol '{}' eliminado correctamente.", nombreNormalizado);
+        logger.info("Rol '{}' eliminado correctamente por admin {}.", nombreNormalizado, adminRutSolicitante);
         return "Rol '" + nombreRol + "' eliminado correctamente.";
     }
 
-    // Este método ya estaba bien, se usa para las respuestas.
     public RolDTO mapToRolDTOWithPermissions(Rol rol) {
         if (rol == null) return null;
-        Set<String> nombresPermisos = rol.getPermisos().stream()
-                                        .map(Permiso::getNombrePermiso)
-                                        .collect(Collectors.toSet());
+        Set<String> nombresPermisos = Collections.emptySet();
+        if (rol.getPermisos() != null) {
+            nombresPermisos = rol.getPermisos().stream()
+                                            .filter(permiso -> permiso != null && permiso.getNombrePermiso() != null)
+                                            .map(Permiso::getNombrePermiso)
+                                            .collect(Collectors.toSet());
+        }
         return new RolDTO(rol.getNombre(), rol.getDescripcion(), nombresPermisos);
     }
 }

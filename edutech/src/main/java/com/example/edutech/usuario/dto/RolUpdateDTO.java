@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public class RolUpdateDTO {
-    @NotBlank(message = "La descripción no puede estar vacía al actualizar.") // Opcional si se permite descripción vacía
+    @NotBlank(message = "La descripción no puede estar vacía al actualizar.")
     @Size(max = 255, message = "La descripción no puede exceder los 255 caracteres.")
     private String descripcion;
 
