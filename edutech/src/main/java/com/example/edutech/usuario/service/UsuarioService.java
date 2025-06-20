@@ -308,7 +308,7 @@ public class UsuarioService {
 
     // Este método es solo para depuración y puede ser eliminado en producción.
     public void listarTodosLosUsuariosConsola() {
-        // ... (sin cambios)
+
         List<Usuario> usuarios = usuarioRepository.findAll();
         if (usuarios.isEmpty()) {
             System.out.println("No hay usuarios registrados en la base de datos.");
