@@ -1,4 +1,3 @@
-// Ubicación: src/test/java/com/example/edutech/curso/service/CursoServiceTest.java
 package com.example.edutech.curso.service;
 
 import java.math.BigDecimal;
@@ -134,7 +133,6 @@ class CursoServiceTest {
             assertTrue(exception.getMessage().contains("Ya existe un curso con la sigla"));
         }
     }
-
     @Nested
     @DisplayName("Actualización de Estado de Cursos")
     class ActualizarEstadoCursoTests {
