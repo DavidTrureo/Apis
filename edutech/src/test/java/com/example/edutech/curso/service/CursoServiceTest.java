@@ -114,7 +114,7 @@ class CursoServiceTest {
             when(adminRutChecker.isAdmin(RUT_NO_ADMIN)).thenReturn(false);
 
             // Act & Assert
-            // SOLUCIÓN a "Throwable method result is ignored"
+
             SecurityException exception = assertThrows(SecurityException.class, () -> cursoService.crearCurso(cursoCreateDTO, RUT_NO_ADMIN));
             assertNotNull(exception); // Opcional, pero buena práctica
             
@@ -194,7 +194,7 @@ class CursoServiceTest {
             // Arrange
             List<Curso> listaCursos = List.of(cursoBorrador);
             Page<Curso> paginaCursos = new PageImpl<>(listaCursos);
-            // SOLUCIÓN a Type Safety warning: Usar any() en lugar de any(Specification.class)
+
             when(cursoRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(paginaCursos);
 
             // Act
@@ -226,7 +226,7 @@ class CursoServiceTest {
             verify(inscripcionRepository).deleteByCurso(SIGLA_CURSO);
             verify(cursoRepository).delete(cursoBorrador);
         }
-        
+
         @Test
         @DisplayName("Debería lanzar SecurityException al intentar eliminar sin ser admin")
         void eliminarCurso_sinSerAdmin_deberiaLanzarSecurityException() {
@@ -237,7 +237,6 @@ class CursoServiceTest {
             SecurityException exception = assertThrows(SecurityException.class, () -> cursoService.eliminarCurso(SIGLA_CURSO, RUT_NO_ADMIN));
             assertNotNull(exception); // Verifica que la excepción fue lanzada
 
-            // SOLUCIÓN al error de ambigüedad
             verify(inscripcionRepository, never()).deleteByCurso(anyString());
             verify(cursoRepository, never()).delete(any(Curso.class));
         }
