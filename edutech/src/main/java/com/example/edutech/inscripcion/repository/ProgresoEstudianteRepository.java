@@ -1,5 +1,5 @@
 package com.example.edutech.inscripcion.repository;
-//REALIZADO POR: Cristóbal Mira
+
 import java.util.List;
 import java.util.Optional;
 

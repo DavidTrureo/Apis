@@ -1,5 +1,5 @@
 package com.example.edutech.evaluacion.model;
-//REALIZADO POR: Cristóbal Mira
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;

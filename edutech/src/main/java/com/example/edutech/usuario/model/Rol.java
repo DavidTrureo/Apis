@@ -44,7 +44,6 @@ public class Rol {
         this.descripcion = descripcion;
     }
 
-    // Getters y Setters
     public String getNombre() {
         return nombre;
     }

@@ -55,7 +55,6 @@ public class Pago {
         this.estadoPago = "PENDIENTE";
     }
 
-    
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     public Usuario getUsuario() { return usuario; }

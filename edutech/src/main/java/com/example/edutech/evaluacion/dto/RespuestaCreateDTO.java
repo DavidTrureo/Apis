@@ -22,7 +22,6 @@ public class RespuestaCreateDTO {
         this.preguntaId = preguntaId;
     }
 
-    // Getters y Setters (sin cambios)
     public String getContenido() { return contenido; }
     public void setContenido(String contenido) { this.contenido = contenido; }
     public Boolean getEsCorrecta() { return esCorrecta; }

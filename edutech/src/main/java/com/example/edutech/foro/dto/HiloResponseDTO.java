@@ -1,6 +1,6 @@
 package com.example.edutech.foro.dto;
 
-import java.time.LocalDateTime; // Usaremos un DTO simple de usuario
+import java.time.LocalDateTime; // Usaré un DTO simple de usuario
 
 import com.example.edutech.usuario.dto.UsuarioDTO;
 
@@ -28,7 +28,6 @@ public class HiloResponseDTO {
         this.totalMensajes = totalMensajes;
     }
 
-    // Getters y Setters
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     public String getTitulo() { return titulo; }

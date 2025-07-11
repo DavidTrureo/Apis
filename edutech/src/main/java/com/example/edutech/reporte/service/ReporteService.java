@@ -32,7 +32,7 @@ public class ReporteService {
         this.reporteRepository = reporteRepository;
         this.generacionReporteService = generacionReporteService;
         this.objectMapper = new ObjectMapper();
-        // Asegurarse de que el mapper puede manejar tipos de fecha y hora de Java 8+
+        // Siempre asegurarse de que el mapper puede manejar tipos de fecha y hora de Java 8+
         this.objectMapper.registerModule(new JavaTimeModule());
         this.objectMapper.findAndRegisterModules();
     }

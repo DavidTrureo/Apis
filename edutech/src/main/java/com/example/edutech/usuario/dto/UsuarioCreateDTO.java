@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 public class UsuarioCreateDTO {
 
     @NotBlank(message = "El RUT es obligatorio.")
-    // Podrías añadir una validación de formato de RUT si tienes una librería o regex
+    // Podría añadir una validación de formato de RUT si tengo una librería o regex
     private String rut;
 
     @NotBlank(message = "El nombre es obligatorio.")
@@ -40,7 +40,6 @@ public class UsuarioCreateDTO {
         this.estadoCuenta = estadoCuenta;
     }
 
-    // Getters y Setters (sin cambios)
     public String getRut() { return rut; }
     public void setRut(String rut) { this.rut = rut; }
     public String getNombre() { return nombre; }

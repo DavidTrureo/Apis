@@ -22,7 +22,6 @@ public class ProveedorDTO {
     @Size(max = 100, message = "El email no puede exceder los 100 caracteres.")
     private String mail;
 
-    // Constructor vacío para Jackson
     public ProveedorDTO() {
     }
 

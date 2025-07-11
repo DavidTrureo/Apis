@@ -1,14 +1,9 @@
 package com.example.edutech.evaluacion.dto;
 
-// No es necesario importar List aquí a menos que incluyas la lista de RespuestaResponseDTO
-
 public class PreguntaResponseDTO {
     private Integer id;
     private String enunciado;
-    private Integer evaluacionId; // ID de la evaluación a la que pertenece
-    // Opcional: Si quisieras incluir las respuestas directamente en este DTO
-    // import java.util.List;
-    // private List<RespuestaResponseDTO> respuestas;
+    private Integer evaluacionId;
 
     public PreguntaResponseDTO() {
         // Constructor vacío necesario para algunos frameworks/librerías (ej. Jackson)
@@ -20,7 +15,7 @@ public class PreguntaResponseDTO {
         this.evaluacionId = evaluacionId;
     }
 
-    // --- Getters ---
+
     public Integer getId() {
         return id;
     }
@@ -33,7 +28,6 @@ public class PreguntaResponseDTO {
         return evaluacionId;
     }
 
-    // --- Setters ---
     public void setId(Integer id) {
         this.id = id;
     }
@@ -46,7 +40,7 @@ public class PreguntaResponseDTO {
         this.evaluacionId = evaluacionId;
     }
 
-    // Si añades la lista de respuestas:
+    // Si añado la lista de respuestas:
     // public List<RespuestaResponseDTO> getRespuestas() { return respuestas; }
     // public void setRespuestas(List<RespuestaResponseDTO> respuestas) { this.respuestas = respuestas; }
 }

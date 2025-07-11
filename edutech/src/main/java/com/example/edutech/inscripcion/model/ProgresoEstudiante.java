@@ -1,5 +1,5 @@
 package com.example.edutech.inscripcion.model;
-//REALIZADO POR: Cristóbal Mira
+
 import java.time.LocalDateTime;
 
 import com.example.edutech.curso.model.ContenidoCurso;

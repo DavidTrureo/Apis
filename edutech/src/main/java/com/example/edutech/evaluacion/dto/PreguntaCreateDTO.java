@@ -18,7 +18,6 @@ public class PreguntaCreateDTO {
         this.evaluacionId = evaluacionId;
     }
 
-    // Getters y Setters (sin cambios)
     public String getEnunciado() { return enunciado; }
     public void setEnunciado(String enunciado) { this.enunciado = enunciado; }
     public Integer getEvaluacionId() { return evaluacionId; }

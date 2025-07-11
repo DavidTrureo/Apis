@@ -52,7 +52,7 @@ public class GeneracionReporteService {
         Curso curso = cursoRepository.findById(cursoSigla)
                 .orElseThrow(() -> new IllegalArgumentException("Curso con sigla '" + cursoSigla + "' no encontrado para generar reporte."));
 
-        List<Inscripcion> inscripciones = inscripcionRepository.findByCurso_Sigla(cursoSigla); // Usar findByCurso_Sigla
+        List<Inscripcion> inscripciones = inscripcionRepository.findByCurso_Sigla(cursoSigla);
 
         List<EstudianteInscritoDTO> estudiantesDTO = inscripciones.stream()
                 .filter(inscripcion -> inscripcion.getUsuario() != null)

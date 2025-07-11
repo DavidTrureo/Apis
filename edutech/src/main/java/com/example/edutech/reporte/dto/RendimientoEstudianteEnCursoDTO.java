@@ -22,7 +22,6 @@ public class RendimientoEstudianteEnCursoDTO {
         this.totalEvaluacionesCurso = totalEvaluacionesCurso;
     }
 
-    // Getters
     public String getRutEstudiante() {
         return rutEstudiante;
     }

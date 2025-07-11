@@ -66,7 +66,6 @@ public class Curso {
         this.precioBase = (precioBase != null) ? precioBase : BigDecimal.ZERO;
     }
 
-    // --- Getters y Setters ---
     public String getSigla() { return sigla; }
     public void setSigla(String sigla) { this.sigla = sigla; }
 

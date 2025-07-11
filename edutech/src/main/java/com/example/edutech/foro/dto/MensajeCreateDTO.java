@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 
 public class MensajeCreateDTO {
     @NotBlank(message = "El contenido del mensaje es obligatorio.")
-    private String contenido; // TEXT
+    private String contenido;
 
     @NotBlank(message = "El RUT del autor es obligatorio.")
     private String autorRut;

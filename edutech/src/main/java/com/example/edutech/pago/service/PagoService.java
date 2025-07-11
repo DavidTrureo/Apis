@@ -5,13 +5,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger; // IMPORTAR
-import org.slf4j.LoggerFactory; // IMPORTAR
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.edutech.inscripcion.model.Inscripcion;
-import com.example.edutech.pago.dto.PagoResponseDTO; // CAMBIO
+import com.example.edutech.pago.dto.PagoResponseDTO;
 import com.example.edutech.pago.model.Pago;
 import com.example.edutech.pago.repository.PagoRepository;
 import com.example.edutech.usuario.model.Usuario;
@@ -20,7 +20,7 @@ import com.example.edutech.usuario.repository.UsuarioRepository;
 @Service
 public class PagoService {
 
-    private static final Logger logger = LoggerFactory.getLogger(PagoService.class); // AÑADIR
+    private static final Logger logger = LoggerFactory.getLogger(PagoService.class);
 
     private final PagoRepository pagoRepository;
     private final UsuarioRepository usuarioRepository;

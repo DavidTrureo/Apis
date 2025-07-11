@@ -23,6 +23,7 @@ import com.example.edutech.usuario.model.Rol;
 import com.example.edutech.usuario.model.Usuario;
 import com.example.edutech.usuario.repository.RolRepository;
 import com.example.edutech.usuario.repository.UsuarioRepository;
+
 @Service
 public class UsuarioService {
 
@@ -95,7 +96,7 @@ public class UsuarioService {
         return mapToUsuarioDTO(usuario);
     }
 
-    // MÉTODO MODIFICADO para recibir el header
+    // MÉTODO para recibir el header
     @Transactional
     public UsuarioDTO actualizarMiPerfil(PerfilUpdateDTO dto, String userRutHeader) {
         String rutUsuarioAutenticado = getAuthenticatedUsername(userRutHeader);
@@ -134,8 +135,6 @@ public class UsuarioService {
             return mapToUsuarioDTO(usuarioExistente);
         }
     }
-    
-    // ... resto de los métodos del servicio sin cambios ...
 
     @Transactional(readOnly = true)
     public Usuario obtenerUsuarioEntidadPorRut(String rut) {

@@ -1,5 +1,5 @@
 package com.example.edutech.evaluacion.model;
-//REALIZADO POR: Cristóbal Mira
+
 import java.util.ArrayList;
 import java.util.List;
 

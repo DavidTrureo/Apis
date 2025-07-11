@@ -1,5 +1,5 @@
 package com.example.edutech.inscripcion.model;
-//REALIZADO POR: Cristóbal Mira
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime; 
 import java.util.List;

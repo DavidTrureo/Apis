@@ -1,5 +1,5 @@
 package com.example.edutech.inscripcion.controller;
-//REALIZADO POR: Cristóbal Mira
+
 import java.util.List;
 
 import org.slf4j.Logger; 

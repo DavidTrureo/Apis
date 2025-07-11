@@ -17,7 +17,6 @@ public class EstudianteInscritoDTO {
     private String codigoCuponAplicado; // Puede ser null
     private String estadoPago;
 
-    // Constructor vacío para Jackson
     public EstudianteInscritoDTO() {
     }
 

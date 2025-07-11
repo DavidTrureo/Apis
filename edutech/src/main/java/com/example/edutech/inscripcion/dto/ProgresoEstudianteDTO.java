@@ -1,5 +1,5 @@
 package com.example.edutech.inscripcion.dto;
-//REALIZADO POR: Cristóbal Mira
+
 import java.time.LocalDateTime;
 
 public class ProgresoEstudianteDTO {

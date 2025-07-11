@@ -18,7 +18,6 @@ public class AsignarPermisosARolDTO {
         this.nombresPermisos = nombresPermisos;
     }
 
-    // Getter y Setter
     public Set<String> getNombresPermisos() {
         return nombresPermisos;
     }

@@ -75,7 +75,7 @@ public class ProgresoEstudianteService {
         return mapToDTO(guardado);
     }
 
-    @Transactional(readOnly = true) // <-- ANOTACIÓN AÑADIDA
+    @Transactional(readOnly = true)
     public List<ProgresoEstudianteDTO> obtenerProgresoPorInscripcion(Integer inscripcionId) {
         Inscripcion inscripcion = inscripcionRepository.findById(inscripcionId)
                 .orElseThrow(() -> new IllegalArgumentException("Inscripción con ID " + inscripcionId + " no encontrada."));
@@ -85,7 +85,7 @@ public class ProgresoEstudianteService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true) // <-- ANOTACIÓN AÑADIDA
+    @Transactional(readOnly = true)
     public ProgresoCursoDTO obtenerProgresoGeneralCurso(String usuarioRut, String cursoSigla) {
         Usuario usuario = usuarioRepository.findById(usuarioRut)
             .orElseThrow(() -> new IllegalArgumentException("Usuario con RUT " + usuarioRut + " no encontrado."));

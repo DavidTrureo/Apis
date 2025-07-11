@@ -43,10 +43,10 @@ public class CursoController {
 
     @PostMapping("/registrar")
     public ResponseEntity<?> registrarCurso(@Valid @RequestBody CursoCreateDTO cursoCreateDTO,
-                                          @RequestHeader("X-Admin-RUT") String adminRutSolicitante) { // AÑADIR cabecera
+                                          @RequestHeader("X-Admin-RUT") String adminRutSolicitante) {
         logger.info("POST /api/cursos/registrar solicitado por admin {}", adminRutSolicitante);
         try {
-            CursoResponseDTO cursoCreado = cursoService.crearCurso(cursoCreateDTO, adminRutSolicitante); // PASAR adminRut
+            CursoResponseDTO cursoCreado = cursoService.crearCurso(cursoCreateDTO, adminRutSolicitante);
             return ResponseEntity.status(HttpStatus.CREATED).body(cursoCreado);
         } catch (SecurityException e) {
             logger.warn("Intento no autorizado de registrar curso: {}", e.getMessage());
@@ -117,7 +117,7 @@ public class CursoController {
     @PutMapping("/{sigla}")
     public ResponseEntity<?> actualizarCurso(@PathVariable String sigla,
                                             @Valid @RequestBody CursoUpdateDTO cursoUpdateDTO,
-                                            @RequestHeader("X-Admin-RUT") String adminRutSolicitante) { // AÑADIR cabecera
+                                            @RequestHeader("X-Admin-RUT") String adminRutSolicitante) {
         logger.info("PUT /api/cursos/{} solicitado por admin {}", sigla, adminRutSolicitante);
         try {
             CursoResponseDTO cursoActualizado = cursoService.actualizarCurso(sigla, cursoUpdateDTO, adminRutSolicitante); // PASAR adminRut
@@ -172,7 +172,7 @@ public class CursoController {
 
     @DeleteMapping("/{sigla}")
     public ResponseEntity<String> eliminarCurso(@PathVariable String sigla,
-                                                @RequestHeader("X-Admin-RUT") String adminRutSolicitante) { // AÑADIR cabecera
+                                                @RequestHeader("X-Admin-RUT") String adminRutSolicitante) {
         logger.info("DELETE /api/cursos/{} solicitado por admin {}", sigla, adminRutSolicitante);
         try {
             String mensaje = cursoService.eliminarCurso(sigla, adminRutSolicitante); // PASAR adminRut
@@ -193,7 +193,7 @@ public class CursoController {
     @PutMapping("/{sigla}/instructor")
     public ResponseEntity<String> gestionarInstructorCurso(@PathVariable String sigla,
                                                         @RequestBody Map<String, String> payload,
-                                                        @RequestHeader("X-Admin-RUT") String adminRutSolicitante) { // AÑADIR cabecera
+                                                        @RequestHeader("X-Admin-RUT") String adminRutSolicitante) {
         String rutInstructor = payload.get("rutInstructor");
         logger.info("PUT /api/cursos/{}/instructor solicitado con rutInstructor: {} por admin {}", sigla, rutInstructor, adminRutSolicitante);
 

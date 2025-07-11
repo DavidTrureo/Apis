@@ -34,7 +34,6 @@ public class ResenaCalificacionCreateDTO {
         this.comentario = comentario;
     }
 
-
     public String getUsuarioRut() { return usuarioRut; }
     public void setUsuarioRut(String usuarioRut) { this.usuarioRut = usuarioRut; }
     public String getCursoSigla() { return cursoSigla; }

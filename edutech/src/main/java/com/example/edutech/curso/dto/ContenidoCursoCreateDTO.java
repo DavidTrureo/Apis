@@ -14,7 +14,7 @@ public class ContenidoCursoCreateDTO {
     private String tipo;
 
     @NotBlank(message = "La URL del contenido es obligatoria.")
-    // Podrías añadir @URL si es una URL web, o una validación de formato específica
+    // Podría añadir @URL si es una URL web, o una validación de formato específica
     private String url;
 
     @NotBlank(message = "La sigla del curso asociado es obligatoria.")
@@ -22,7 +22,7 @@ public class ContenidoCursoCreateDTO {
 
     public ContenidoCursoCreateDTO() {}
 
-    // Getters y Setters
+
     public String getTitulo() { return titulo; }
     public void setTitulo(String titulo) { this.titulo = titulo; }
     public String getTipo() { return tipo; }

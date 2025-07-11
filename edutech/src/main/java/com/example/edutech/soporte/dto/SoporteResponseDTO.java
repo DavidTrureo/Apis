@@ -20,7 +20,6 @@ public class SoporteResponseDTO {
     private LocalDateTime fechaResolucion;
     private String solucionAplicada;
 
-    // Constructor vacío
     public SoporteResponseDTO() {}
 
     // Constructor completo (o usa un builder/mapper)
@@ -39,8 +38,6 @@ public class SoporteResponseDTO {
         this.solucionAplicada = solucionAplicada;
     }
 
-
-    // Getters y Setters
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     public String getTitulo() { return titulo; }

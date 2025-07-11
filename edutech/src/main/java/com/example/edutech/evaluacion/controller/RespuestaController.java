@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.edutech.evaluacion.dto.RespuestaCreateDTO;
-import com.example.edutech.evaluacion.dto.RespuestaResponseDTO; // IMPORTAR
+import com.example.edutech.evaluacion.dto.RespuestaResponseDTO;
 import com.example.edutech.evaluacion.service.RespuestaService;
 
 import jakarta.validation.Valid;
@@ -54,7 +54,7 @@ public class RespuestaController {
         }
     }
     
-    @GetMapping("/{id}") // NUEVO ENDPOINT
+    @GetMapping("/{id}")
     public ResponseEntity<?> obtenerRespuestaPorId(@PathVariable Integer id) {
         try {
             RespuestaResponseDTO respuestaDTO = respuestaService.obtenerRespuestaDTOPorId(id);
@@ -65,10 +65,9 @@ public class RespuestaController {
         }
     }
 
-
     @GetMapping
-    public ResponseEntity<List<RespuestaResponseDTO>> listarTodasLasRespuestas() { // CAMBIO
-        List<RespuestaResponseDTO> respuestasDTO = respuestaService.listarTodasLasRespuestasDTO(); // CAMBIO
+    public ResponseEntity<List<RespuestaResponseDTO>> listarTodasLasRespuestas() {
+        List<RespuestaResponseDTO> respuestasDTO = respuestaService.listarTodasLasRespuestasDTO();
         return ResponseEntity.ok(respuestasDTO);
     }
 }

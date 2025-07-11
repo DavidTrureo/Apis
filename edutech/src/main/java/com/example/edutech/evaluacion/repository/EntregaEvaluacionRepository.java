@@ -17,6 +17,5 @@ public interface EntregaEvaluacionRepository extends JpaRepository<EntregaEvalua
 
     Optional<EntregaEvaluacion> findByEstudianteAndEvaluacion(Usuario estudiante, Evaluacion evaluacion);
 
-    // Nuevo: Encontrar entregas de un estudiante para una lista de evaluaciones
     List<EntregaEvaluacion> findByEstudianteAndEvaluacionIn(Usuario estudiante, List<Evaluacion> evaluaciones);
 }

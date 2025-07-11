@@ -48,8 +48,6 @@ public class CursoService {
         this.adminRutChecker = adminRutChecker;
     }
 
-    // ... (otros métodos como crearCurso, obtenerCursoPorSigla, etc. no cambian) ...
-
     @Transactional
     public CursoResponseDTO crearCurso(CursoCreateDTO cursoDTO, String adminRutSolicitante) {
         logger.debug("Admin {} intentando crear curso con sigla: {}", adminRutSolicitante, cursoDTO.getSigla());
@@ -122,7 +120,7 @@ public class CursoService {
                 predicates.add(criteriaBuilder.or(nombreLike, descripcionLike));
             }
             if (categoria != null && !categoria.isBlank()) {
-                // <-- LÍNEA MODIFICADA: De 'equal' a 'like' para un filtro más flexible
+
                 predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("categoria")), "%" + categoria.toLowerCase() + "%"));
             }
             if (rutInstructor != null && !rutInstructor.isBlank()) {
@@ -138,7 +136,6 @@ public class CursoService {
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("precioBase"), precioMax));
             }
 
-            // Evita un `SELECT *` si no hay predicados, aunque findAll(spec, pageable) lo maneja.
             if (predicates.isEmpty()) {
                 return criteriaBuilder.conjunction();
             }
@@ -147,8 +144,6 @@ public class CursoService {
         Page<Curso> paginaCursos = cursoRepository.findAll(spec, pageable);
         return paginaCursos.map(this::mapToCursoResponseDTO);
     }
-    
-    // ... (resto de los métodos del servicio como actualizar, eliminar, etc. no cambian) ...
 
     @Transactional(readOnly = true)
     public List<CursoResponseDTO> listarCursosPorEstado(EstadoCursoEnum estado) {

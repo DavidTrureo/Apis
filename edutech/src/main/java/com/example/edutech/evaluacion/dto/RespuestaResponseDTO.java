@@ -5,7 +5,7 @@ public class RespuestaResponseDTO {
     private String contenido;
     private boolean esCorrecta;
     private Integer preguntaId;
-    // Opcional: podrías incluir el enunciado de la pregunta si es útil
+    // Opcional: podría incluir el enunciado de la pregunta si es útil
     // private String preguntaEnunciado;
 
     public RespuestaResponseDTO() {}
@@ -17,7 +17,6 @@ public class RespuestaResponseDTO {
         this.preguntaId = preguntaId;
     }
 
-    // Getters y Setters
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     public String getContenido() { return contenido; }

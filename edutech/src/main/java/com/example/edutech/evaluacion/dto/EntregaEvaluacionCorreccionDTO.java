@@ -12,8 +12,8 @@ public class EntregaEvaluacionCorreccionDTO {
     @DecimalMax(value = "100.0", message = "La calificación máxima es 100.0 (o ajusta según tu escala).") // Ajusta el máximo si es necesario
     private Double calificacion;
 
-    private String comentariosInstructor; // Opcional
-
+    private String comentariosInstructor;
+    
     @NotBlank(message = "El RUT del instructor que corrige es obligatorio.")
     private String rutInstructorCorrector;
 

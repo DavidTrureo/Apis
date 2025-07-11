@@ -44,7 +44,6 @@ public class ResenaSecurityService {
             return false;
         }
 
-        
         return resena.getUsuario().getRut().equals(usuarioRutAutenticado);
     }
 }

@@ -1,6 +1,6 @@
 package com.example.edutech.soporte.dto;
 
-import com.example.edutech.soporte.model.EstadoTicketSoporte; // Importar
+import com.example.edutech.soporte.model.EstadoTicketSoporte;
 
 import jakarta.validation.constraints.NotNull;
 

@@ -98,7 +98,6 @@ public class EntregaEvaluacionService {
         if (entregaPrevia.isPresent()) {
             throw new IllegalStateException("El estudiante ya ha realizado una entrega para esta evaluación.");
         }
-        // ...
 
         EntregaEvaluacion nuevaEntrega = new EntregaEvaluacion();
         nuevaEntrega.setEstudiante(estudiante);

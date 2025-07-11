@@ -1,7 +1,7 @@
 package com.example.edutech.soporte.dto;
 
-import jakarta.validation.constraints.NotBlank; // Importar
-import jakarta.validation.constraints.Size;   // Importar
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public class SoporteCreateDTO {
     @NotBlank(message = "El título es obligatorio.") // Descomentar
@@ -17,7 +17,6 @@ public class SoporteCreateDTO {
     @Size(max = 100, message = "La categoría no puede exceder los 100 caracteres.")
     private String categoria; // Opcional al crear
 
-    // Getters y Setters
     public String getTitulo() { return titulo; }
     public void setTitulo(String titulo) { this.titulo = titulo; }
     public String getDescripcion() { return descripcion; }

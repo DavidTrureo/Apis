@@ -22,7 +22,6 @@ public class CursoResponseDTO {
         this.instructor = instructor;
     }
 
-    // Getters y Setters
     public String getSigla() { return sigla; }
     public void setSigla(String sigla) { this.sigla = sigla; }
     public String getNombre() { return nombre; }

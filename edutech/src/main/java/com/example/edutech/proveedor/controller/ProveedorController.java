@@ -19,7 +19,7 @@ import com.example.edutech.proveedor.dto.ProveedorDTO;
 import com.example.edutech.proveedor.service.ProveedorService;
 
 @RestController
-@RequestMapping("/api/proveedores") // Estandarizar ruta base
+@RequestMapping("/api/proveedores")
 public class ProveedorController {
 
     private static final Logger logger = LoggerFactory.getLogger(ProveedorController.class);

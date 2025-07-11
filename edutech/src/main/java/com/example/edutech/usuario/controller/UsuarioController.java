@@ -54,7 +54,7 @@ public class UsuarioController {
 
     @GetMapping("/me")
     public ResponseEntity<?> obtenerMiPerfil(
-            // Añadimos un header opcional para simular la autenticación en las pruebas
+            // Añadí un header opcional para simular la autenticación en las pruebas
             @RequestHeader(name = "X-User-RUT", required = false) String userRutHeader) {
         try {
             UsuarioDTO perfil = usuarioService.obtenerMiPerfil(userRutHeader); // Pasamos el header al servicio
@@ -93,8 +93,6 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno al actualizar el perfil.");
         }
     }
-    
-    // ... resto de los métodos del controlador sin cambios ...
 
     @GetMapping("/{rut}")
     public ResponseEntity<?> obtenerUsuarioPorRut(@PathVariable String rut) {

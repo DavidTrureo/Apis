@@ -19,15 +19,12 @@ public class CursoUpdateDTO {
 
     public CursoUpdateDTO() {}
 
-    // Getters y Setters
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
     public String getDescripcionDetallada() { return descripcionDetallada; }
     public void setDescripcionDetallada(String descripcionDetallada) { this.descripcionDetallada = descripcionDetallada; }
     public String getCategoria() { return categoria; }
     public void setCategoria(String categoria) { this.categoria = categoria; }
-    // public EstadoCursoEnum getEstadoCurso() { return estadoCurso; }
-    // public void setEstadoCurso(EstadoCursoEnum estadoCurso) { this.estadoCurso = estadoCurso; }
     public String getRutInstructor() { return rutInstructor; }
     public void setRutInstructor(String rutInstructor) { this.rutInstructor = rutInstructor; }
 }

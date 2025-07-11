@@ -8,7 +8,6 @@ public class ReporteRendimientoCursoDataDTO {
     private long totalEstudiantesConProgreso; // Estudiantes que tienen al menos una inscripción
     private List<RendimientoEstudianteEnCursoDTO> rendimientoEstudiantes;
 
-    // Constructor vacío para Jackson
     public ReporteRendimientoCursoDataDTO() {
     }
 
@@ -19,7 +18,6 @@ public class ReporteRendimientoCursoDataDTO {
         this.rendimientoEstudiantes = rendimientoEstudiantes;
     }
 
-    // Getters
     public String getCursoSigla() {
         return cursoSigla;
     }

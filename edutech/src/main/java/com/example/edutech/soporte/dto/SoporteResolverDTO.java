@@ -1,6 +1,6 @@
 package com.example.edutech.soporte.dto;
 
-import jakarta.validation.constraints.NotBlank; // Importar
+import jakarta.validation.constraints.NotBlank;
 
 public class SoporteResolverDTO {
     @NotBlank(message = "La solución aplicada es obligatoria.") // Descomentar

@@ -1,5 +1,5 @@
 package com.example.edutech.inscripcion.dto;
-//REALIZADO POR: Cristóbal Mira
+
 public class ProgresoCursoDTO {
     private Integer inscripcionId;
     private String usuarioRut;
@@ -14,7 +14,6 @@ public class ProgresoCursoDTO {
 
     public ProgresoCursoDTO() {
     }
-
 
     public ProgresoCursoDTO(Integer inscripcionId, String usuarioRut, String usuarioNombre, String cursoSigla, String cursoNombre, int totalContenidos, int contenidosCompletados, double porcentajeCompletado, String mensaje) {
         this.inscripcionId = inscripcionId;

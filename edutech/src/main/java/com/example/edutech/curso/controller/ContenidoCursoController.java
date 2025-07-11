@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.edutech.curso.dto.ContenidoCursoCreateDTO;
 import com.example.edutech.curso.dto.ContenidoCursoResponseDTO;
 import com.example.edutech.curso.dto.ContenidoCursoUpdateDTO;
-import com.example.edutech.curso.service.ContenidoCursoService; // IMPORTAR
+import com.example.edutech.curso.service.ContenidoCursoService;
 
 import jakarta.validation.Valid;
 
@@ -36,7 +36,7 @@ public class ContenidoCursoController {
     @PostMapping
     public ResponseEntity<?> crearContenido(@Valid @RequestBody ContenidoCursoCreateDTO dto) {
         try {
-            ContenidoCursoResponseDTO nuevoContenidoDTO = contenidoCursoService.crearContenidoDTO(dto); // CAMBIO
+            ContenidoCursoResponseDTO nuevoContenidoDTO = contenidoCursoService.crearContenidoDTO(dto);
             return ResponseEntity.status(HttpStatus.CREATED).body(nuevoContenidoDTO);
         } catch (IllegalArgumentException e) {
             logger.warn("Error al crear contenido de curso: {}", e.getMessage());
@@ -48,15 +48,15 @@ public class ContenidoCursoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ContenidoCursoResponseDTO>> listarTodosLosContenidos() { // CAMBIO
-        List<ContenidoCursoResponseDTO> contenidosDTO = contenidoCursoService.listarContenidosDTO(); // CAMBIO
+    public ResponseEntity<List<ContenidoCursoResponseDTO>> listarTodosLosContenidos() {
+        List<ContenidoCursoResponseDTO> contenidosDTO = contenidoCursoService.listarContenidosDTO();
         return ResponseEntity.ok(contenidosDTO);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerContenidoPorId(@PathVariable int id) {
         try {
-            ContenidoCursoResponseDTO contenidoDTO = contenidoCursoService.obtenerContenidoDTOPorId(id); // CAMBIO
+            ContenidoCursoResponseDTO contenidoDTO = contenidoCursoService.obtenerContenidoDTOPorId(id);
             return ResponseEntity.ok(contenidoDTO);
         } catch (IllegalArgumentException e) {
             logger.warn("Contenido de curso con ID {} no encontrado.", id);
@@ -67,7 +67,7 @@ public class ContenidoCursoController {
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizarContenido(@PathVariable int id, @Valid @RequestBody ContenidoCursoUpdateDTO dto) {
         try {
-            ContenidoCursoResponseDTO contenidoActualizadoDTO = contenidoCursoService.actualizarContenidoDTO(id, dto); // CAMBIO
+            ContenidoCursoResponseDTO contenidoActualizadoDTO = contenidoCursoService.actualizarContenidoDTO(id, dto);
             return ResponseEntity.ok(contenidoActualizadoDTO);
         } catch (IllegalArgumentException e) {
             logger.warn("Error al actualizar contenido de curso con ID {}: {}", id, e.getMessage());

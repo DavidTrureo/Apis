@@ -19,12 +19,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "ticket_soporte") // Renombrar tabla para mayor claridad
-public class Soporte { // Considera renombrar la clase a TicketSoporte para mayor claridad
+@Table(name = "ticket_soporte") //Tabla para tickets de soporte
+public class Soporte { // Considerar renombrar la clase a TicketSoporte para mayor claridad
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id; // Cambiado a Integer
+    private Integer id;
 
     @Column(nullable = false, length = 255)
     private String titulo; // Añadido para un resumen del problema
@@ -75,7 +75,6 @@ public class Soporte { // Considera renombrar la clase a TicketSoporte para mayo
         this.prioridad = PrioridadTicketSoporte.MEDIA; // Prioridad por defecto
     }
 
-    // Getters y Setters para todos los campos (incluidos los nuevos)
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     public String getTitulo() { return titulo; }

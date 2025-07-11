@@ -12,7 +12,6 @@ public class PermisoCreateDTO {
     @Size(max = 255, message = "La descripción no puede exceder los 255 caracteres.")
     private String descripcion;
 
-    // Getters y Setters
     public String getNombrePermiso() {
         return nombrePermiso;
     }

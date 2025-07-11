@@ -54,7 +54,6 @@ public class MensajeForo {
         this.autor = autor;
     }
 
-    // Getters y Setters
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     public String getContenido() { return contenido; }

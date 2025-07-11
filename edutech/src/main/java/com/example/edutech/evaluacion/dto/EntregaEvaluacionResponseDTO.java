@@ -6,15 +6,15 @@ import com.example.edutech.usuario.dto.UsuarioDTO;
 
 public class EntregaEvaluacionResponseDTO {
     private Integer id;
-    private UsuarioDTO estudiante; // Podría ser solo el RUT si prefieres menos datos
+    private UsuarioDTO estudiante;
     private Integer evaluacionId;
-    // Opcional: private String evaluacionNombre;
-    private String respuestasJson; // Mantener como JSON o parsear a una estructura si es simple
+
+    private String respuestasJson;
     private String estado;
     private LocalDateTime fechaEntrega;
     private Double calificacion;
     private String comentariosInstructor;
-    private UsuarioDTO instructorCorrector; // Podría ser solo el RUT
+    private UsuarioDTO instructorCorrector;
     private LocalDateTime fechaCorreccion;
 
     public EntregaEvaluacionResponseDTO() {}

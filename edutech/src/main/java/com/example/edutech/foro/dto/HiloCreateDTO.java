@@ -10,7 +10,7 @@ public class HiloCreateDTO {
     private String titulo;
 
     @NotBlank(message = "El contenido inicial del hilo es obligatorio.")
-    private String contenidoInicial; // TEXT, sin @Size específico a menos que se requiera
+    private String contenidoInicial;
 
     @NotBlank(message = "El RUT del autor es obligatorio.")
     private String autorRut;

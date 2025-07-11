@@ -1,6 +1,6 @@
 package com.example.edutech.soporte.dto;
 
-import jakarta.validation.constraints.NotBlank; // Importar
+import jakarta.validation.constraints.NotBlank;
 
 public class SoporteAsignarAgenteDTO {
     @NotBlank(message = "El RUT del agente de soporte es obligatorio.") // Descomentar

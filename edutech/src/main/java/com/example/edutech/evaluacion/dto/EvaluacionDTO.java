@@ -1,5 +1,4 @@
 package com.example.edutech.evaluacion.dto;
-//REALIZADO POR: Cristóbal Mira
 
 
 public class EvaluacionDTO {

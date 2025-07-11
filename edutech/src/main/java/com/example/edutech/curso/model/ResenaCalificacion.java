@@ -1,5 +1,5 @@
 package com.example.edutech.curso.model;
-//REALIZADO POR: Maverick Valdes
+
 import java.time.LocalDateTime;
 
 import com.example.edutech.usuario.model.Usuario;

@@ -20,7 +20,6 @@ public class MarcarContenidoCompletadoDTO {
         this.completado = completado;
     }
 
-    // Getters y Setters (sin cambios)
     public Integer getInscripcionId() { return inscripcionId; }
     public void setInscripcionId(Integer inscripcionId) { this.inscripcionId = inscripcionId; }
     public Integer getContenidoCursoId() { return contenidoCursoId; }

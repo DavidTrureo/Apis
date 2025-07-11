@@ -21,7 +21,6 @@ public class InscripcionCreateDTO {
         this.codigoCupon = codigoCupon;
     }
 
-    // Getters y Setters (sin cambios)
     public String getUsuarioRut() { return usuarioRut; }
     public void setUsuarioRut(String usuarioRut) { this.usuarioRut = usuarioRut; }
     public String getCursoSigla() { return cursoSigla; }

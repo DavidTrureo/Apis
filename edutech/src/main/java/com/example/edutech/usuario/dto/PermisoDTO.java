@@ -14,7 +14,6 @@ public class PermisoDTO {
         this.descripcion = descripcion;
     }
 
-    // Getters y Setters
     public Integer getId() {
         return id;
     }

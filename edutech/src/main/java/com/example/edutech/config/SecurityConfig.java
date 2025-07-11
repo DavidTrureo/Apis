@@ -37,7 +37,7 @@ public class SecurityConfig {
                 .requestMatchers(SWAGGER_WHITELIST).permitAll()
                 
                 // 2. Por ahora, permite el acceso a todo lo demás.
-                //    En el futuro, aquí pondrás reglas más específicas como .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                //    En el futuro, aquí pondrí poner reglas más específicas como .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .anyRequest().permitAll()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(STATELESS));

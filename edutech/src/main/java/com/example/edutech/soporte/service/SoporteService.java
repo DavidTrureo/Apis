@@ -53,14 +53,14 @@ public class SoporteService {
         return mapToResponseDTO(ticketGuardado);
     }
 
-    @Transactional(readOnly = true) // <-- ANOTACIÓN AÑADIDA
+    @Transactional(readOnly = true)
     public SoporteResponseDTO obtenerTicketPorId(Integer id) {
         Soporte ticket = soporteRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Ticket de soporte con ID " + id + " no encontrado."));
         return mapToResponseDTO(ticket);
     }
 
-    @Transactional(readOnly = true) // <-- ANOTACIÓN AÑADIDA
+    @Transactional(readOnly = true)
     public List<SoporteResponseDTO> listarTodosLosTickets() {
         return soporteRepository.findAll().stream()
                 .map(this::mapToResponseDTO)

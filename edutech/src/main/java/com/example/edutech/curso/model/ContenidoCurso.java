@@ -1,5 +1,5 @@
 package com.example.edutech.curso.model;
-//REALIZADO POR: Maverick Valdes
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;

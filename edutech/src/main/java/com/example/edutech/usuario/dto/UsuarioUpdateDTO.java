@@ -29,7 +29,6 @@ public class UsuarioUpdateDTO {
         this.estadoCuenta = estadoCuenta;
     }
 
-    // Getters y Setters (sin cambios)
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
     public String getEmail() { return email; }

@@ -1,5 +1,5 @@
 package com.example.edutech.evaluacion.repository;
-//REALIZADO POR: Cristóbal Mira
+
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;

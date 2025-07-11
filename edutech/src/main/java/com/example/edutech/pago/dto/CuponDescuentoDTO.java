@@ -18,10 +18,8 @@ public class CuponDescuentoDTO {
     private String cursoAplicableSigla; // Solo la sigla para el DTO
     private boolean activo;
 
-    // Constructor vacío
     public CuponDescuentoDTO() {}
 
-    // Constructor completo (para mapeo desde la entidad)
     public CuponDescuentoDTO(Integer id, String codigo, String descripcion, TipoDescuento tipoDescuento, BigDecimal valorDescuento, LocalDate fechaInicioValidez, LocalDate fechaExpiracion, Integer usosMaximos, int usosActuales, String cursoAplicableSigla, boolean activo) {
         this.id = id;
         this.codigo = codigo;
@@ -36,7 +34,6 @@ public class CuponDescuentoDTO {
         this.activo = activo;
     }
 
-    // Getters y Setters
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     public String getCodigo() { return codigo; }

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.edutech.evaluacion.dto.EntregaEvaluacionCorreccionDTO;
 import com.example.edutech.evaluacion.dto.EntregaEvaluacionCreateDTO;
-import com.example.edutech.evaluacion.dto.EntregaEvaluacionResponseDTO; // IMPORTAR
+import com.example.edutech.evaluacion.dto.EntregaEvaluacionResponseDTO;
 import com.example.edutech.evaluacion.service.EntregaEvaluacionService;
 
 import jakarta.validation.Valid;
@@ -35,7 +35,7 @@ public class EntregaEvaluacionController {
     @PostMapping
     public ResponseEntity<?> registrarEntrega(@Valid @RequestBody EntregaEvaluacionCreateDTO dto) {
         try {
-            EntregaEvaluacionResponseDTO nuevaEntregaDTO = entregaEvaluacionService.registrarEntregaDTO(dto); // CAMBIO
+            EntregaEvaluacionResponseDTO nuevaEntregaDTO = entregaEvaluacionService.registrarEntregaDTO(dto);
             return ResponseEntity.status(HttpStatus.CREATED).body(nuevaEntregaDTO);
         } catch (IllegalArgumentException | IllegalStateException e) {
             logger.warn("Error al registrar entrega de evaluación: {}", e.getMessage());
@@ -49,7 +49,7 @@ public class EntregaEvaluacionController {
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerEntregaPorId(@PathVariable Integer id) {
         try {
-            EntregaEvaluacionResponseDTO entregaDTO = entregaEvaluacionService.obtenerEntregaDTOPorId(id); // CAMBIO
+            EntregaEvaluacionResponseDTO entregaDTO = entregaEvaluacionService.obtenerEntregaDTOPorId(id);
             return ResponseEntity.ok(entregaDTO);
         } catch (IllegalArgumentException e) {
             logger.warn("Entrega de evaluación con ID {} no encontrada.", id);
@@ -58,8 +58,8 @@ public class EntregaEvaluacionController {
     }
 
     @GetMapping
-    public ResponseEntity<List<EntregaEvaluacionResponseDTO>> listarEntregas() { // CAMBIO
-        List<EntregaEvaluacionResponseDTO> entregasDTO = entregaEvaluacionService.listarEntregasDTO(); // CAMBIO
+    public ResponseEntity<List<EntregaEvaluacionResponseDTO>> listarEntregas() {
+        List<EntregaEvaluacionResponseDTO> entregasDTO = entregaEvaluacionService.listarEntregasDTO();
         return ResponseEntity.ok(entregasDTO);
     }
 
@@ -67,7 +67,7 @@ public class EntregaEvaluacionController {
     @GetMapping("/evaluacion/{evaluacionId}")
     public ResponseEntity<?> listarEntregasPorEvaluacion(@PathVariable Integer evaluacionId) {
         try {
-            List<EntregaEvaluacionResponseDTO> entregasDTO = entregaEvaluacionService.listarEntregasDTOPorEvaluacionId(evaluacionId); // CAMBIO
+            List<EntregaEvaluacionResponseDTO> entregasDTO = entregaEvaluacionService.listarEntregasDTOPorEvaluacionId(evaluacionId);
             return ResponseEntity.ok(entregasDTO);
         } catch (IllegalArgumentException e) {
             logger.warn("Intento de listar entregas para evaluación no existente ID: {}", evaluacionId);
@@ -81,7 +81,7 @@ public class EntregaEvaluacionController {
             @PathVariable Integer entregaId,
             @Valid @RequestBody EntregaEvaluacionCorreccionDTO correccionDTO) {
         try {
-            EntregaEvaluacionResponseDTO entregaCorregidaDTO = entregaEvaluacionService.corregirEntregaDTO(entregaId, correccionDTO); // CAMBIO
+            EntregaEvaluacionResponseDTO entregaCorregidaDTO = entregaEvaluacionService.corregirEntregaDTO(entregaId, correccionDTO);
             return ResponseEntity.ok(entregaCorregidaDTO);
         } catch (IllegalArgumentException e) {
             logger.warn("Error al corregir entrega de evaluación ID {}: {}", entregaId, e.getMessage());

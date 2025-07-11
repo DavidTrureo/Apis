@@ -26,7 +26,7 @@ public class CuponDescuentoCreateDTO {
 
     @NotNull(message = "El valor del descuento es obligatorio.")
     @DecimalMin(value = "0.0", inclusive = false, message = "El valor del descuento debe ser mayor que cero.")
-    // Se añade validación específica en el servicio para porcentajes (0 < valor <= 1)
+    // Añado validación específica en el servicio para porcentajes (0 < valor <= 1)
     private BigDecimal valorDescuento;
 
     // fechaInicioValidez es opcional, si es null, se asume hoy
@@ -40,14 +40,13 @@ public class CuponDescuentoCreateDTO {
     @Min(value = 0, message = "Los usos máximos no pueden ser negativos. 0 para ilimitado si se desea manejar así en el servicio.")
     private Integer usosMaximos; // Puede ser null para ilimitado
 
-    private String cursoAplicableSigla; // Opcional
+    private String cursoAplicableSigla;
 
     private Boolean activo; // Opcional, default true en el servicio
 
     public CuponDescuentoCreateDTO() {
     }
 
-    // Getters y Setters (sin cambios)
     public String getCodigo() { return codigo; }
     public void setCodigo(String codigo) { this.codigo = codigo; }
     public String getDescripcion() { return descripcion; }

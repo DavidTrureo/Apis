@@ -10,7 +10,6 @@ public class CursoDTO {
         this.nombre = nombre;
     }
 
-    // Getters y Setters
     public String getSigla() {
         return sigla;
     }

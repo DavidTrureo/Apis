@@ -1,7 +1,7 @@
 package com.example.edutech.curso.service;
 
 import java.util.List;
-import java.util.stream.Collectors; // IMPORTAR
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +12,7 @@ import com.example.edutech.curso.dto.ContenidoCursoUpdateDTO;
 import com.example.edutech.curso.model.ContenidoCurso;
 import com.example.edutech.curso.model.Curso;
 import com.example.edutech.curso.repository.ContenidoCursoRepository;
-import com.example.edutech.curso.repository.CursoRepository; // IMPORTAR
+import com.example.edutech.curso.repository.CursoRepository;
 
 @Service
 public class ContenidoCursoService {
@@ -38,7 +38,7 @@ public class ContenidoCursoService {
     }
 
     @Transactional(readOnly = true)
-    public ContenidoCursoResponseDTO obtenerContenidoDTOPorId(int id) { // CAMBIO: Nombre y tipo de retorno
+    public ContenidoCursoResponseDTO obtenerContenidoDTOPorId(int id) {
         ContenidoCurso contenido = contenidoCursoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Contenido con ID " + id + " no encontrado."));
         return mapToResponseDTO(contenido);
@@ -52,14 +52,14 @@ public class ContenidoCursoService {
 
 
     @Transactional(readOnly = true)
-    public List<ContenidoCursoResponseDTO> listarContenidosDTO() { // CAMBIO: Nombre y tipo de retorno
+    public List<ContenidoCursoResponseDTO> listarContenidosDTO() {
         return contenidoCursoRepository.findAll().stream()
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public ContenidoCursoResponseDTO crearContenidoDTO(ContenidoCursoCreateDTO dto) { // CAMBIO: Nombre y tipo de retorno
+    public ContenidoCursoResponseDTO crearContenidoDTO(ContenidoCursoCreateDTO dto) {
         String siglaCurso = dto.getCursoSigla();
         Curso curso = cursoRepository.findById(siglaCurso)
                 .orElseThrow(() -> new IllegalArgumentException("Curso con sigla '" + siglaCurso + "' no encontrado. No se puede crear contenido para un curso inexistente."));
@@ -75,7 +75,7 @@ public class ContenidoCursoService {
     }
 
     @Transactional
-    public ContenidoCursoResponseDTO actualizarContenidoDTO(int id, ContenidoCursoUpdateDTO dto) { // CAMBIO: Nombre y tipo de retorno
+    public ContenidoCursoResponseDTO actualizarContenidoDTO(int id, ContenidoCursoUpdateDTO dto) {
         ContenidoCurso contenidoExistente = contenidoCursoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Contenido con ID " + id + " no encontrado para actualizar."));
 
@@ -126,7 +126,7 @@ public class ContenidoCursoService {
     }
 
     @Transactional
-    public void eliminarContenido(int id) { // CAMBIO: void, lanza excepción si no existe
+    public void eliminarContenido(int id) { // Void, lanza excepción si no existe
         if (!contenidoCursoRepository.existsById(id)) {
             throw new IllegalArgumentException("Contenido con ID " + id + " no encontrado para eliminar.");
         }

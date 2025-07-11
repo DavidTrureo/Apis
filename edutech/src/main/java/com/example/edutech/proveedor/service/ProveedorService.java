@@ -28,7 +28,7 @@ public class ProveedorService {
         if (proveedorRepository.existsById(dto.getRut())) {
             throw new IllegalArgumentException("Proveedor con RUT " + dto.getRut() + " ya existe.");
         }
-        // Aquí podrías añadir más validaciones (ej. formato de email)
+        // Aquí podría añadir más validaciones (ej. formato de email)
 
         Proveedor proveedor = new Proveedor();
         proveedor.setRut(dto.getRut());
@@ -66,7 +66,7 @@ public class ProveedorService {
             proveedorExistente.setDescripcion(dto.getDescripcion());
         }
         if (dto.getMail() != null && !dto.getMail().isBlank()) {
-            // Aquí podrías validar el formato del email
+            // Aquí podría validar el formato del email
             proveedorExistente.setMail(dto.getMail());
         }
 

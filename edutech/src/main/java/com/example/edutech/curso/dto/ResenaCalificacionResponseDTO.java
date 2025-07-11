@@ -1,5 +1,5 @@
 package com.example.edutech.curso.dto;
-//REALIZADO POR: Maverick Valdes
+
 import java.time.LocalDateTime;
 
 public class ResenaCalificacionResponseDTO {
@@ -24,7 +24,6 @@ public class ResenaCalificacionResponseDTO {
         this.fechaResena = fechaResena;
         this.esAprobada = esAprobada;
     }
-
 
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }

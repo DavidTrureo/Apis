@@ -22,7 +22,7 @@ import com.example.edutech.soporte.dto.SoporteResponseDTO;
 import com.example.edutech.soporte.service.SoporteService;
 
 @RestController
-@RequestMapping("/api/soporte/tickets") // Ruta base actualizada
+@RequestMapping("/api/soporte/tickets") // Ruta base
 public class SoporteController {
 
     private static final Logger logger = LoggerFactory.getLogger(SoporteController.class);
