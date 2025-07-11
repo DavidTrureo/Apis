@@ -5,9 +5,13 @@ import java.time.LocalDate;
 public class ReporteDTO {
     private String tipo;
     private LocalDate fechaGeneracion;
-    private String contenido;
+    private Object contenido;
 
-    public ReporteDTO(String tipo, LocalDate fechaGeneracion, String contenido) {
+
+    public ReporteDTO() {
+    }
+
+    public ReporteDTO(String tipo, LocalDate fechaGeneracion, Object contenido) {
         this.tipo = tipo;
         this.fechaGeneracion = fechaGeneracion;
         this.contenido = contenido;
@@ -29,12 +33,11 @@ public class ReporteDTO {
         this.fechaGeneracion = fechaGeneracion;
     }
 
-    public String getContenido() {
+    public Object getContenido() {
         return contenido;
     }
 
-    public void setContenido(String contenido) {
+    public void setContenido(Object contenido) {
         this.contenido = contenido;
     }
-
 }

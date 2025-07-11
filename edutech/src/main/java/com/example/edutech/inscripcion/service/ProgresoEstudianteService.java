@@ -1,17 +1,17 @@
 package com.example.edutech.inscripcion.service;
-//REALIZADO POR: Cristóbal Mira
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional; 
+import org.springframework.transaction.annotation.Transactional;
+
 import com.example.edutech.curso.model.ContenidoCurso;
 import com.example.edutech.curso.model.Curso;
 import com.example.edutech.curso.repository.ContenidoCursoRepository;
 import com.example.edutech.inscripcion.dto.MarcarContenidoCompletadoDTO;
 import com.example.edutech.inscripcion.dto.ProgresoCursoDTO;
-import com.example.edutech.inscripcion.dto.ProgresoEstudianteDTO; 
+import com.example.edutech.inscripcion.dto.ProgresoEstudianteDTO;
 import com.example.edutech.inscripcion.model.Inscripcion; 
 import com.example.edutech.inscripcion.model.ProgresoEstudiante;
 import com.example.edutech.inscripcion.repository.InscripcionRepository;
@@ -25,9 +25,8 @@ public class ProgresoEstudianteService {
     private final ProgresoEstudianteRepository progresoEstudianteRepository;
     private final InscripcionRepository inscripcionRepository;
     private final ContenidoCursoRepository contenidoCursoRepository;
-    private final UsuarioRepository usuarioRepository; // obtener datos del usuario
+    private final UsuarioRepository usuarioRepository;
 
-   
     public ProgresoEstudianteService(ProgresoEstudianteRepository progresoEstudianteRepository,
                                     InscripcionRepository inscripcionRepository,
                                     ContenidoCursoRepository contenidoCursoRepository,
@@ -76,14 +75,17 @@ public class ProgresoEstudianteService {
         return mapToDTO(guardado);
     }
 
+    @Transactional(readOnly = true) // <-- ANOTACIÓN AÑADIDA
     public List<ProgresoEstudianteDTO> obtenerProgresoPorInscripcion(Integer inscripcionId) {
         Inscripcion inscripcion = inscripcionRepository.findById(inscripcionId)
                 .orElseThrow(() -> new IllegalArgumentException("Inscripción con ID " + inscripcionId + " no encontrada."));
+        // La transacción asegura que las relaciones LAZY se puedan cargar aquí
         return progresoEstudianteRepository.findByInscripcion(inscripcion).stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true) // <-- ANOTACIÓN AÑADIDA
     public ProgresoCursoDTO obtenerProgresoGeneralCurso(String usuarioRut, String cursoSigla) {
         Usuario usuario = usuarioRepository.findById(usuarioRut)
             .orElseThrow(() -> new IllegalArgumentException("Usuario con RUT " + usuarioRut + " no encontrado."));
@@ -92,6 +94,7 @@ public class ProgresoEstudianteService {
             .orElseThrow(() -> new IllegalArgumentException("Usuario " + usuarioRut + " no está inscrito en el curso " + cursoSigla + "."));
 
         List<ContenidoCurso> contenidosDelCurso = inscripcion.getCurso().getContenidos();
+        
         if (contenidosDelCurso == null || contenidosDelCurso.isEmpty()) {
             return new ProgresoCursoDTO(inscripcion.getId(), usuarioRut, usuario.getNombre(), cursoSigla, inscripcion.getCurso().getNombre(), 0, 0, 0.0, "El curso no tiene contenido definido.");
         }

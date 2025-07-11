@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.edutech.soporte.dto.SoporteCreateDTO; // Para el mapeo
+import com.example.edutech.soporte.dto.SoporteCreateDTO;
 import com.example.edutech.soporte.dto.SoporteResolverDTO;
 import com.example.edutech.soporte.dto.SoporteResponseDTO;
 import com.example.edutech.soporte.model.EstadoTicketSoporte;
@@ -23,7 +23,6 @@ public class SoporteService {
     private final SoporteRepository soporteRepository;
     private final UsuarioRepository usuarioRepository;
 
-    //@Autowired
     public SoporteService(SoporteRepository soporteRepository, UsuarioRepository usuarioRepository) {
         this.soporteRepository = soporteRepository;
         this.usuarioRepository = usuarioRepository;
@@ -49,18 +48,19 @@ public class SoporteService {
         nuevoTicket.setDescripcion(dto.getDescripcion());
         nuevoTicket.setUsuarioReporta(usuarioReporta);
         nuevoTicket.setCategoria(dto.getCategoria());
-        // estado, prioridad, fechaCreacion, fechaUltimaActualizacion se establecen en el constructor de Soporte
         
         Soporte ticketGuardado = soporteRepository.save(nuevoTicket);
         return mapToResponseDTO(ticketGuardado);
     }
 
+    @Transactional(readOnly = true) // <-- ANOTACIÓN AÑADIDA
     public SoporteResponseDTO obtenerTicketPorId(Integer id) {
         Soporte ticket = soporteRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Ticket de soporte con ID " + id + " no encontrado."));
         return mapToResponseDTO(ticket);
     }
 
+    @Transactional(readOnly = true) // <-- ANOTACIÓN AÑADIDA
     public List<SoporteResponseDTO> listarTodosLosTickets() {
         return soporteRepository.findAll().stream()
                 .map(this::mapToResponseDTO)
@@ -75,13 +75,12 @@ public class SoporteService {
         Usuario agente = usuarioRepository.findById(rutAgenteSoporte)
                 .orElseThrow(() -> new IllegalArgumentException("Agente de soporte con RUT '" + rutAgenteSoporte + "' no encontrado."));
 
-        // Validar que el usuario sea un agente de soporte (Rol SOPORTE)
         if (agente.getRol() == null || !"SOPORTE".equalsIgnoreCase(agente.getRol().getNombre())) {
             throw new IllegalArgumentException("El usuario con RUT '" + rutAgenteSoporte + "' no tiene el rol de SOPORTE.");
         }
 
         ticket.setAgenteAsignado(agente);
-        if (ticket.getEstado() == EstadoTicketSoporte.ABIERTO) { // Solo cambiar a EN_PROCESO si estaba ABIERTO
+        if (ticket.getEstado() == EstadoTicketSoporte.ABIERTO) {
             ticket.setEstado(EstadoTicketSoporte.EN_PROCESO);
         }
         ticket.setFechaUltimaActualizacion(LocalDateTime.now());
@@ -94,16 +93,14 @@ public class SoporteService {
         Soporte ticket = soporteRepository.findById(ticketId)
                 .orElseThrow(() -> new IllegalArgumentException("Ticket de soporte con ID " + ticketId + " no encontrado."));
 
-        // Aquí podrías añadir lógica de transición de estados si es necesario
-        // Ej: no se puede pasar de CERRADO a ABIERTO directamente.
         ticket.setEstado(nuevoEstado);
         ticket.setFechaUltimaActualizacion(LocalDateTime.now());
         if (nuevoEstado == EstadoTicketSoporte.RESUELTO || nuevoEstado == EstadoTicketSoporte.CERRADO) {
-            if (ticket.getFechaResolucion() == null) { // Solo setear si no estaba ya resuelto/cerrado
+            if (ticket.getFechaResolucion() == null) {
                 ticket.setFechaResolucion(LocalDateTime.now());
             }
         } else {
-            ticket.setFechaResolucion(null); // Limpiar fecha de resolución si se reabre
+            ticket.setFechaResolucion(null);
         }
 
         Soporte ticketActualizado = soporteRepository.save(ticket);
@@ -130,10 +127,10 @@ public class SoporteService {
         }
 
         ticket.setSolucionAplicada(dto.getSolucionAplicada());
-        ticket.setEstado(EstadoTicketSoporte.RESUELTO); // Marcar como resuelto
+        ticket.setEstado(EstadoTicketSoporte.RESUELTO);
         ticket.setFechaResolucion(LocalDateTime.now());
         ticket.setFechaUltimaActualizacion(LocalDateTime.now());
-        if (ticket.getAgenteAsignado() == null) { // Si no tenía agente, asignar al que lo resolvió
+        if (ticket.getAgenteAsignado() == null) {
             ticket.setAgenteAsignado(agenteResolutor);
         }
 

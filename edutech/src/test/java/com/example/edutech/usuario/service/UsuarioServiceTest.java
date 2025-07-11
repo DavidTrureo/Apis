@@ -85,7 +85,6 @@ public class UsuarioServiceTest {
         dtoUpdateValido.setNombre("Nombre Actualizado Test");
         dtoUpdateValido.setEmail("update@example.com");
 
-        // Los stubs de adminRutChecker se configuran por test ahora
     }
 
     @Nested

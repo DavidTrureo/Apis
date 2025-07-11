@@ -37,7 +37,6 @@ public class UsuarioController {
 
     @PostMapping("/registrar")
     public ResponseEntity<?> registrar(@Valid @RequestBody UsuarioCreateDTO usuarioCreateDTO) {
-        // ... (sin cambios, el registro es público)
         try {
             String mensaje = usuarioService.registrarUsuario(usuarioCreateDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(mensaje);
@@ -54,10 +53,11 @@ public class UsuarioController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> obtenerMiPerfil() {
-        // ... (sin cambios, se basa en la autenticación que se configurará después)
+    public ResponseEntity<?> obtenerMiPerfil(
+            // Añadimos un header opcional para simular la autenticación en las pruebas
+            @RequestHeader(name = "X-User-RUT", required = false) String userRutHeader) {
         try {
-            UsuarioDTO perfil = usuarioService.obtenerMiPerfil();
+            UsuarioDTO perfil = usuarioService.obtenerMiPerfil(userRutHeader); // Pasamos el header al servicio
             return ResponseEntity.ok(perfil);
         } catch (IllegalStateException e) { 
             logger.warn("Intento de obtener perfil sin autenticación: {}", e.getMessage());
@@ -72,10 +72,12 @@ public class UsuarioController {
     }
 
     @PutMapping("/me")
-    public ResponseEntity<?> actualizarMiPerfil(@Valid @RequestBody PerfilUpdateDTO perfilUpdateDTO) {
-        // ... (sin cambios, se basa en la autenticación)
+    public ResponseEntity<?> actualizarMiPerfil(
+            @Valid @RequestBody PerfilUpdateDTO perfilUpdateDTO,
+            // Añadimos un header opcional para simular la autenticación en las pruebas
+            @RequestHeader(name = "X-User-RUT", required = false) String userRutHeader) {
         try {
-            UsuarioDTO perfilActualizado = usuarioService.actualizarMiPerfil(perfilUpdateDTO);
+            UsuarioDTO perfilActualizado = usuarioService.actualizarMiPerfil(perfilUpdateDTO, userRutHeader); // Pasamos el header al servicio
             return ResponseEntity.ok(perfilActualizado);
         } catch (IllegalStateException e) { 
             logger.warn("Intento de actualizar perfil sin autenticación: {}", e.getMessage());
@@ -91,11 +93,11 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno al actualizar el perfil.");
         }
     }
+    
+    // ... resto de los métodos del controlador sin cambios ...
 
     @GetMapping("/{rut}")
     public ResponseEntity<?> obtenerUsuarioPorRut(@PathVariable String rut) {
-        // Para simplificar, este endpoint podría ser público o requerir admin
-        // Si requiere admin, añadir @RequestHeader("X-Admin-RUT")
         logger.info("GET /api/usuarios/{} solicitado", rut);
         try {
             UsuarioDTO usuarioDTO = usuarioService.obtenerUsuarioDTOPorRut(rut);
@@ -108,7 +110,6 @@ public class UsuarioController {
 
     @GetMapping
     public ResponseEntity<List<UsuarioDTO>> listarTodosLosUsuarios() {
-        // Para simplificar, este endpoint podría ser público o requerir admin
         logger.info("GET /api/usuarios solicitado");
         return ResponseEntity.ok(usuarioService.listarUsuarios());
     }

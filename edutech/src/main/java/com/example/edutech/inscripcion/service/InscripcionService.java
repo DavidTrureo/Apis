@@ -1,5 +1,4 @@
 package com.example.edutech.inscripcion.service;
-//REALIZADO POR: Cristóbal Mira
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
@@ -106,7 +105,6 @@ public class InscripcionService {
             } else {
                 nuevaInscripcion.setEstadoPago("FALLIDO");
                 nuevaInscripcion.setEstadoInscripcion("PENDIENTE_PAGO"); 
-                 
             }
         } else { 
             nuevaInscripcion.setEstadoPago(precioBaseCurso.compareTo(BigDecimal.ZERO) == 0 ? "GRATUITO" : "CUBIERTO_POR_CUPON");
@@ -131,12 +129,14 @@ public class InscripcionService {
         return mapToResponseDTO(inscripcionGuardada);
     }
 
+    @Transactional(readOnly = true)
     public List<InscripcionResponseDTO> listarTodasLasInscripciones() {
         return inscripcionRepository.findAll().stream()
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true) // <-- ANOTACIÓN AÑADIDA
     public List<InscripcionResponseDTO> listarInscripcionesPorUsuario(String rutUsuario) {
         Usuario usuario = usuarioRepository.findById(rutUsuario)
             .orElseThrow(() -> new IllegalArgumentException("Usuario con RUT " + rutUsuario + " no encontrado."));
@@ -146,6 +146,7 @@ public class InscripcionService {
                 .collect(Collectors.toList());
     }
     
+    @Transactional(readOnly = true)
     public InscripcionResponseDTO obtenerInscripcionPorId(Integer id) {
         Inscripcion inscripcion = inscripcionRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Inscripción con ID " + id + " no encontrada."));

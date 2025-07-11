@@ -60,7 +60,7 @@ public class RolServiceTest {
         rolCreateDTOValido = new RolCreateDTO("ROL_PARA_CREAR", "Descripción del rol a crear");
         rolUpdateDTOValido = new RolUpdateDTO("Descripción actualizada del rol");
 
-        // CORRECCIÓN: Usar "ROL_EXISTENTE" consistentemente
+        // Usar "ROL_EXISTENTE" consistentemente
         rolExistente = new Rol("ROL_EXISTENTE", "Descripción original");
         Permiso permisoVer = new Permiso("VER_RECURSO", "Permite ver recursos");
         permisoVer.setId(1);
@@ -149,7 +149,7 @@ public class RolServiceTest {
             RolDTO resultado = rolService.obtenerRolDTOPorNombre("ROL_EXISTENTE");
             
             assertNotNull(resultado);
-            assertEquals("ROL_EXISTENTE", resultado.getNombre()); // CORREGIDO: esto ahora debe pasar
+            assertEquals("ROL_EXISTENTE", resultado.getNombre());
             assertEquals(1, resultado.getPermisos().size());
             assertTrue(resultado.getPermisos().contains("VER_RECURSO"));
         }
@@ -176,7 +176,7 @@ public class RolServiceTest {
             RolDTO resultado = rolService.actualizarRol("ROL_EXISTENTE", rolUpdateDTOValido, ADMIN_RUT_VALIDO);
 
             assertNotNull(resultado);
-            assertEquals("Descripción actualizada del rol", resultado.getDescripcion()); // AHORA COINCIDIRÁ
+            assertEquals("Descripción actualizada del rol", resultado.getDescripcion());
             assertEquals("ROL_EXISTENTE", resultado.getNombre());
             verify(rolRepository).save(rolExistente);
             assertEquals("Descripción actualizada del rol", rolExistente.getDescripcion());

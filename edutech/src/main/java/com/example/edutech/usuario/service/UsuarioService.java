@@ -32,27 +32,32 @@ public class UsuarioService {
     private final RolRepository rolRepository;
     private final PasswordEncoder passwordEncoder;
     private final InscripcionRepository inscripcionRepository;
-    private final AdminRutChecker adminRutChecker; // INYECTAR
+    private final AdminRutChecker adminRutChecker;
 
     public UsuarioService(UsuarioRepository usuarioRepository,
                         RolRepository rolRepository,
                         PasswordEncoder passwordEncoder,
                         InscripcionRepository inscripcionRepository,
-                        AdminRutChecker adminRutChecker) { // AÑADIR AL CONSTRUCTOR
+                        AdminRutChecker adminRutChecker) {
         this.usuarioRepository = usuarioRepository;
         this.rolRepository = rolRepository;
         this.passwordEncoder = passwordEncoder;
         this.inscripcionRepository = inscripcionRepository;
-        this.adminRutChecker = adminRutChecker; // ASIGNAR
+        this.adminRutChecker = adminRutChecker;
     }
+    
+    // MÉTODO MODIFICADO para aceptar un RUT del header para simular autenticación
+    private String getAuthenticatedUsername(String userRutHeader) {
+        // Opción 1: Usar el header si está presente (para pruebas en Postman)
+        if (userRutHeader != null && !userRutHeader.isBlank()) {
+            logger.debug("Simulando autenticación para usuario con RUT desde header: {}", userRutHeader);
+            return userRutHeader;
+        }
 
-    // ... (getAuthenticatedUsername, mapToUsuarioDTO, obtenerMiPerfil, actualizarMiPerfil - sin cambios desde la última vez)
-
-    @Transactional(readOnly = true)
-    private String getAuthenticatedUsername() {
+        // Opción 2: Usar el SecurityContextHolder (para cuando se implemente Spring Security)
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
-            logger.warn("Intento de acceso sin autenticación o por usuario anónimo.");
+            logger.warn("Intento de acceso sin autenticación o por usuario anónimo y sin header de simulación.");
             throw new IllegalStateException("Usuario no autenticado. Se requiere autenticación para esta operación.");
         }
         Object principal = authentication.getPrincipal();
@@ -78,9 +83,10 @@ public class UsuarioService {
         );
     }
 
+    // MÉTODO MODIFICADO para recibir el header
     @Transactional(readOnly = true)
-    public UsuarioDTO obtenerMiPerfil() {
-        String username = getAuthenticatedUsername();
+    public UsuarioDTO obtenerMiPerfil(String userRutHeader) {
+        String username = getAuthenticatedUsername(userRutHeader);
         Usuario usuario = usuarioRepository.findById(username)
                 .orElseThrow(() -> {
                     logger.error("Usuario autenticado con identificador '{}' no encontrado en la base de datos.", username);
@@ -89,9 +95,10 @@ public class UsuarioService {
         return mapToUsuarioDTO(usuario);
     }
 
+    // MÉTODO MODIFICADO para recibir el header
     @Transactional
-    public UsuarioDTO actualizarMiPerfil(PerfilUpdateDTO dto) {
-        String rutUsuarioAutenticado = getAuthenticatedUsername();
+    public UsuarioDTO actualizarMiPerfil(PerfilUpdateDTO dto, String userRutHeader) {
+        String rutUsuarioAutenticado = getAuthenticatedUsername(userRutHeader);
         Usuario usuarioExistente = usuarioRepository.findById(rutUsuarioAutenticado)
                 .orElseThrow(() -> {
                     logger.error("Error: Usuario autenticado con RUT '{}' no encontrado en la base de datos al intentar actualizar perfil.", rutUsuarioAutenticado);
@@ -127,6 +134,8 @@ public class UsuarioService {
             return mapToUsuarioDTO(usuarioExistente);
         }
     }
+    
+    // ... resto de los métodos del servicio sin cambios ...
 
     @Transactional(readOnly = true)
     public Usuario obtenerUsuarioEntidadPorRut(String rut) {
@@ -143,8 +152,6 @@ public class UsuarioService {
 
     @Transactional
     public String registrarUsuario(UsuarioCreateDTO dto) {
-        // ... (lógica existente de registrarUsuario)
-        // El registro es público, no necesita verificación de admin aquí.
         if (dto.getRut() == null || dto.getRut().trim().isEmpty()) {
             throw new IllegalArgumentException("Error: El RUT del usuario no puede estar vacío.");
         }
@@ -199,7 +206,7 @@ public class UsuarioService {
     }
 
     @Transactional
-    public String actualizarUsuario(String rut, UsuarioUpdateDTO dto, String adminRutSolicitante) { // AÑADIR adminRutSolicitante
+    public String actualizarUsuario(String rut, UsuarioUpdateDTO dto, String adminRutSolicitante) {
         if (!adminRutChecker.isAdmin(adminRutSolicitante)) {
             logger.warn("Intento no autorizado de actualizar usuario {} por RUT (no admin): {}", rut, adminRutSolicitante);
             throw new SecurityException("Acción no autorizada: Se requieren privilegios de administrador para actualizar este usuario.");
@@ -213,7 +220,6 @@ public class UsuarioService {
 
         boolean modificado = false;
 
-        // ... (lógica de actualización existente) ...
         if (dto.getNombre() != null && !dto.getNombre().isBlank() && !dto.getNombre().equals(usuarioExistente.getNombre())) {
             usuarioExistente.setNombre(dto.getNombre());
             modificado = true;
@@ -258,7 +264,7 @@ public class UsuarioService {
     }
 
     @Transactional
-    public String eliminarUsuario(String rut, String adminRutSolicitante) { // AÑADIR adminRutSolicitante
+    public String eliminarUsuario(String rut, String adminRutSolicitante) {
         if (!adminRutChecker.isAdmin(adminRutSolicitante)) {
             logger.warn("Intento no autorizado de eliminar usuario {} por RUT (no admin): {}", rut, adminRutSolicitante);
             throw new SecurityException("Acción no autorizada: Se requieren privilegios de administrador para eliminar usuarios.");
@@ -274,11 +280,8 @@ public class UsuarioService {
         try {
             inscripcionRepository.deleteByUsuarioRut(rut);
             logger.info("Inscripciones eliminadas para usuario RUT: {}", rut);
-            // TODO: Eliminar otras dependencias (reseñas, pagos, tickets, mensajes, hilos, entregas)
-            // Ejemplo: resenaCalificacionRepository.deleteByUsuarioRut(rut); (necesitarías estos métodos en los repos)
         } catch (Exception e) {
             logger.error("Error al eliminar dependencias (inscripciones) para usuario RUT: {}. Error: {}", rut, e.getMessage(), e);
-            // Considera si la eliminación del usuario debe continuar si falla la eliminación de dependencias
         }
 
         usuarioRepository.delete(usuario);
@@ -287,7 +290,7 @@ public class UsuarioService {
     }
 
     @Transactional
-    public String asignarRolAUsuario(String rut, String nombreRol, String adminRutSolicitante) { // AÑADIR adminRutSolicitante
+    public String asignarRolAUsuario(String rut, String nombreRol, String adminRutSolicitante) {
         if (!adminRutChecker.isAdmin(adminRutSolicitante)) {
             logger.warn("Intento no autorizado de asignar rol a usuario {} por RUT (no admin): {}", rut, adminRutSolicitante);
             throw new SecurityException("Acción no autorizada: Se requieren privilegios de administrador para asignar roles.");
@@ -306,9 +309,7 @@ public class UsuarioService {
         return "Rol '" + nombreRol + "' asignado correctamente al usuario " + rut;
     }
 
-    // Este método es solo para depuración y puede ser eliminado en producción.
     public void listarTodosLosUsuariosConsola() {
-
         List<Usuario> usuarios = usuarioRepository.findAll();
         if (usuarios.isEmpty()) {
             System.out.println("No hay usuarios registrados en la base de datos.");

@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page; // Para joins explícitos si fueran necesarios
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -48,8 +48,7 @@ public class CursoService {
         this.adminRutChecker = adminRutChecker;
     }
 
-    // ... (otros métodos del servicio como crearCurso, obtenerCursoPorSigla, etc.) ...
-    // (Asegúrate de que los métodos de solo lectura tengan @Transactional(readOnly = true))
+    // ... (otros métodos como crearCurso, obtenerCursoPorSigla, etc. no cambian) ...
 
     @Transactional
     public CursoResponseDTO crearCurso(CursoCreateDTO cursoDTO, String adminRutSolicitante) {
@@ -105,6 +104,51 @@ public class CursoService {
                 .orElseThrow(() -> new IllegalArgumentException("Curso con sigla '" + sigla + "' no encontrado."));
         return mapToCursoResponseDTO(curso);
     }
+
+    @Transactional(readOnly = true)
+    public Page<CursoResponseDTO> buscarCursosConFiltros(
+            String palabraClave, String categoria, String rutInstructor,
+            EstadoCursoEnum estadoCurso, BigDecimal precioMin, BigDecimal precioMax,
+            Pageable pageable) {
+        logger.debug("Buscando cursos con filtros: palabraClave={}, categoria={}, rutInstructor={}, estado={}, precioMin={}, precioMax={}, pageable={}",
+            palabraClave, categoria, rutInstructor, estadoCurso, precioMin, precioMax, pageable);
+
+        Specification<Curso> spec = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (palabraClave != null && !palabraClave.isBlank()) {
+                String searchTerm = "%" + palabraClave.toLowerCase() + "%";
+                Predicate nombreLike = criteriaBuilder.like(criteriaBuilder.lower(root.get("nombre")), searchTerm);
+                Predicate descripcionLike = criteriaBuilder.like(criteriaBuilder.lower(root.get("descripcionDetallada")), searchTerm);
+                predicates.add(criteriaBuilder.or(nombreLike, descripcionLike));
+            }
+            if (categoria != null && !categoria.isBlank()) {
+                // <-- LÍNEA MODIFICADA: De 'equal' a 'like' para un filtro más flexible
+                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("categoria")), "%" + categoria.toLowerCase() + "%"));
+            }
+            if (rutInstructor != null && !rutInstructor.isBlank()) {
+                predicates.add(criteriaBuilder.equal(root.join("instructor", JoinType.LEFT).get("rut"), rutInstructor));
+            }
+            if (estadoCurso != null) {
+                predicates.add(criteriaBuilder.equal(root.get("estadoCurso"), estadoCurso));
+            }
+            if (precioMin != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("precioBase"), precioMin));
+            }
+            if (precioMax != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("precioBase"), precioMax));
+            }
+
+            // Evita un `SELECT *` si no hay predicados, aunque findAll(spec, pageable) lo maneja.
+            if (predicates.isEmpty()) {
+                return criteriaBuilder.conjunction();
+            }
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+        Page<Curso> paginaCursos = cursoRepository.findAll(spec, pageable);
+        return paginaCursos.map(this::mapToCursoResponseDTO);
+    }
+    
+    // ... (resto de los métodos del servicio como actualizar, eliminar, etc. no cambian) ...
 
     @Transactional(readOnly = true)
     public List<CursoResponseDTO> listarCursosPorEstado(EstadoCursoEnum estado) {
@@ -222,9 +266,7 @@ public class CursoService {
 
         logger.info("Eliminando inscripciones asociadas al curso {}", sigla);
         inscripcionRepository.deleteByCurso(sigla);
-        // TODO: Considerar eliminación en cascada o manual de otras entidades relacionadas
-        // (Foros, Evaluaciones, Reseñas del curso, etc.)
-
+        
         cursoRepository.delete(curso);
         logger.info("Curso '{}' y sus inscripciones asociadas eliminados correctamente por admin {}.", sigla, adminRutSolicitante);
         return "Curso '" + sigla + "' y sus datos asociados eliminados correctamente.";
@@ -298,49 +340,6 @@ public class CursoService {
                 curso.getCategoria() != null ? curso.getCategoria() : "Categoría no especificada",
                 instructorDTO
         );
-    }
-
-    @Transactional(readOnly = true)
-    public Page<CursoResponseDTO> buscarCursosConFiltros(
-            String palabraClave, String categoria, String rutInstructor,
-            EstadoCursoEnum estadoCurso, BigDecimal precioMin, BigDecimal precioMax,
-            Pageable pageable) {
-        logger.debug("Buscando cursos con filtros: palabraClave={}, categoria={}, rutInstructor={}, estado={}, precioMin={}, precioMax={}, pageable={}",
-            palabraClave, categoria, rutInstructor, estadoCurso, precioMin, precioMax, pageable);
-
-        Specification<Curso> spec = (root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            if (palabraClave != null && !palabraClave.isBlank()) {
-                String searchTerm = "%" + palabraClave.toLowerCase() + "%";
-                Predicate nombreLike = criteriaBuilder.like(criteriaBuilder.lower(root.get("nombre")), searchTerm);
-                Predicate descripcionLike = criteriaBuilder.like(criteriaBuilder.lower(root.get("descripcionDetallada")), searchTerm);
-                predicates.add(criteriaBuilder.or(nombreLike, descripcionLike));
-            }
-            if (categoria != null && !categoria.isBlank()) {
-                predicates.add(criteriaBuilder.equal(criteriaBuilder.lower(root.get("categoria")), categoria.toLowerCase()));
-            }
-            if (rutInstructor != null && !rutInstructor.isBlank()) {
-                // Para hacer join con la tabla de usuario y filtrar por el RUT del instructor
-                // Es importante que la entidad Curso tenga una relación @ManyToOne llamada 'instructor'
-                predicates.add(criteriaBuilder.equal(root.join("instructor", JoinType.LEFT).get("rut"), rutInstructor));
-            }
-            if (estadoCurso != null) {
-                predicates.add(criteriaBuilder.equal(root.get("estadoCurso"), estadoCurso));
-            }
-            if (precioMin != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("precioBase"), precioMin));
-            }
-            if (precioMax != null) {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("precioBase"), precioMax));
-            }
-
-            if (predicates.isEmpty()) {
-                return criteriaBuilder.conjunction(); // Devuelve un predicado que siempre es true si no hay filtros
-            }
-            return criteriaBuilder.and(predicates.toArray(Predicate[]::new)); // CORREGIDO
-        };
-        Page<Curso> paginaCursos = cursoRepository.findAll(spec, pageable);
-        return paginaCursos.map(this::mapToCursoResponseDTO);
     }
 
     @Transactional(readOnly = true)

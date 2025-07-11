@@ -20,7 +20,7 @@ public class Reporte {
     @Column(nullable = false)
     private LocalDate fechaGeneracion;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT") // <-- LÍNEA MODIFICADA
     private String contenido; 
 
     public Reporte() {
@@ -37,6 +37,7 @@ public class Reporte {
         this.contenido = contenido;
     }
 
+    // ... Getters y Setters no cambian ...
     public int getId() {
         return id;
     }
