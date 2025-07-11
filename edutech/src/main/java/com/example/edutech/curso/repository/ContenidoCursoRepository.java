@@ -1,5 +1,5 @@
 package com.example.edutech.curso.repository;
-//REALIZADO POR: Maverick Valdes
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
